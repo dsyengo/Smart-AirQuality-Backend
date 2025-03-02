@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const Algorithm = "SDK-HMAC-SHA256";
 const HeaderXDate = "X-Sdk-Date";

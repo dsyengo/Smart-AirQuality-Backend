@@ -1,20 +1,12 @@
 import https from 'https';
 import { Signer, HttpRequest } from '../utils/signer.js';
 
-/**
- * Prediction Model Service
- *
- * Sends air quality data to a prediction model for analysis.
- */
+// Access credentials from environment variables
+const PREDICTION_MODEL_AK = process.env.HUAWEI_MODEL_SDK_AK;
+const PREDICTION_MODEL_SK = process.env.HUAWEI_MODEL_SDK_SK;
+const PREDICTION_MODEL_URL = process.env.HUAWEI_PREDICTION_MODEL_URL;
 
-// Access credentials
-const PREDICTION_MODEL_AK = "PIET896VZ8VUULKMSDBG";
-const PREDICTION_MODEL_SK = "NH7HFtgvdms3ynPvw4Wt8GcsIS0IRbFdpvb0jDiM";
-
-// API endpoint
-const PREDICTION_MODEL_URL = "https://2fec676ce4e447d0980abfbeb404b0a3.apig.ap-southeast-3.huaweicloudapis.com/v1/infers/7630957a-eca7-49f2-bce6-64355129aaca";
-
-// Request payload
+// Define the request payload based on the expected air quality monitoring data format
 const payload = {
     data: {
         req_data: [{
@@ -36,27 +28,33 @@ const payload = {
 };
 
 /**
- * Fetches prediction analysis from the model.
- * @returns {Promise<Object>} Resolves with model response.
+ * Fetches prediction analysis from the model by signing the request.
+ * The logic is derived from a Python example where the request is signed
+ * with a provided access key (AK) and secret key (SK) before sending.
+ *
+ * @returns {Promise<Object>} Resolves with the model's response.
  */
 export async function getPredictionAnalysis() {
     return new Promise((resolve, reject) => {
+        // Convert payload to JSON string
         const bodyString = JSON.stringify(payload);
+        // Create an HttpRequest object for a POST request with JSON content.
         const httpRequest = new HttpRequest("POST", PREDICTION_MODEL_URL, { "Content-Type": "application/json" }, bodyString);
 
-        // Initialize and sign request
+        // Initialize the signer with credentials and sign the request.
         const sig = new Signer();
         sig.Key = PREDICTION_MODEL_AK;
         sig.Secret = PREDICTION_MODEL_SK;
         const options = sig.Sign(httpRequest);
 
-        // Make HTTPS request
+        // Make the HTTPS request.
         const req = https.request(options, (res) => {
             let chunks = [];
             res.on("data", (chunk) => chunks.push(chunk));
             res.on("end", () => {
                 try {
-                    resolve(JSON.parse(Buffer.concat(chunks).toString()));
+                    const responseBody = Buffer.concat(chunks).toString();
+                    resolve(JSON.parse(responseBody));
                 } catch (error) {
                     reject(new Error("Error parsing response: " + error));
                 }
@@ -69,9 +67,8 @@ export async function getPredictionAnalysis() {
     });
 }
 
-// Check if module is run directly in ES Modules
-if (import.meta.url === `file://${process.argv[1]}`) {
-    getPredictionAnalysis()
-        .then(result => console.log("Response Body:", result))
-        .catch(err => console.error("Error:", err));
-}
+// Execute a test call if the module is run directly.
+// The final output is formatted as a JSON string for terminal display.
+getPredictionAnalysis()
+    .then(result => console.log(JSON.stringify({ response: result }, null, 2)))
+    .catch(err => console.error(JSON.stringify({ error: err.message }, null, 2)));
