@@ -268,10 +268,13 @@ export function StringToSign(canonicalRequestStr, t) {
 /**
  * Signs the string to sign using the signing key.
  * @param {string} stringToSign 
- * @param {string} signingKey 
+ * @param {string|Buffer} signingKey 
  * @returns {string}
  */
 function SignStringToSign(stringToSign, signingKey) {
+    if (!signingKey) {
+        throw new Error("Signing key is missing or undefined");
+    }
     return crypto.createHmac('sha256', signingKey).update(stringToSign).digest('hex');
 }
 
@@ -314,8 +317,8 @@ function getTime() {
  */
 export class Signer {
     constructor() {
-        this.Key = "";
-        this.Secret = "";
+        this.Key = process.env.HUAWEI_MODEL_SDK_AK;
+        this.Secret = process.env.HUAWEI_MODEL_SDK_SK;
     }
 
     /**
@@ -324,6 +327,13 @@ export class Signer {
      * @returns {object} The options object with signed headers.
      */
     Sign(r) {
+        if (!this.Secret) {
+            throw new Error("Missing Secret key in Signer. Please set the Secret property.");
+        }
+        if (!this.Key) {
+            throw new Error("Missing Access Key in Signer. Please set the Key property.");
+        }
+
         let headerTime = findHeader(r, HeaderXDate);
         if (headerTime === null) {
             headerTime = getTime();
@@ -348,6 +358,7 @@ export class Signer {
         const signedHeadersArr = SignedHeaders(r);
         const canonicalRequestStr = CanonicalRequest(r, signedHeadersArr);
         const stringToSign = StringToSign(canonicalRequestStr, headerTime);
+        // Use this.Secret as the signing key. Ensure it is defined.
         const signature = SignStringToSign(stringToSign, this.Secret);
         options.headers[HeaderAuthorization] = AuthHeaderValue(signature, this.Key, signedHeadersArr);
         return options;

@@ -1,26 +1,99 @@
-import fetch from 'node-fetch';
+import https from 'https';
 
-// URL for fetching weather forecast using the Huawei Pangu Weather model (set in your .env file).
-const HUAWEI_PANGU_WEATHER_API_URL = process.env.HUAWEI_PANGU_WEATHER_API_URL;
+const PANGU_BASE_URL = "api.ecmwf.int";
+const PANGU_API_PATH = "/v1"; // Pangu API endpoint
+const PANGU_API_KEY = "1689a36ea97cf2d720eb453c662802d1";
+const PANGU_EMAIL = "deniswilson028@gmail.com";
 
 /**
- * Retrieves a weather forecast for the specified location using the Huawei Pangu Weather model API.
+ * Fetches weather data from the Pangu platform for a given location.
+ * The location is specified by latitude and longitude.
  *
- * @param {Object} location - An object containing latitude and longitude (e.g., { latitude, longitude }).
- * @returns {Promise<Object>} The weather forecast data as returned by the API.
+ * The function sends a POST request to Pangu with a JSON payload that includes
+ * the location coordinates. The API key and email are included in the request headers
+ * for authentication.
+ *
+ * Request payload format:
+ *
+ * {
+ *   "data": {
+ *     "req_data": [{
+ *       "lat": <latitude>,
+ *       "lng": <longitude>
+ *     }]
+ *   }
+ * }
+ *
+ * Example usage:
+ * 
+ * fetchWeatherDataForLocation({ lat: 36.9741, lng: -122.0308 })
+ *   .then(data => console.log("Weather data:", data))
+ *   .catch(err => console.error("Error fetching weather data:", err));
+ *
+ * @param {Object} location - An object representing the location.
+ * @param {number} location.lat - The latitude.
+ * @param {number} location.lng - The longitude.
+ * @returns {Promise<Object>} A promise that resolves with the weather data from Pangu.
  */
-export async function getWeatherForecast(location) {
-    try {
-        // Construct a query with latitude and longitude.
-        const url = `${HUAWEI_PANGU_WEATHER_API_URL}?lat=${location.latitude}&lon=${location.longitude}`;
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error from Pangu Weather API! Status: ${response.status}`);
+export function fetchWeatherDataForLocation(location) {
+    return new Promise((resolve, reject) => {
+        if (
+            !location ||
+            typeof location.lat !== 'number' ||
+            typeof location.lng !== 'number'
+        ) {
+            return reject(new Error("Invalid location data. 'lat' and 'lng' are required as numbers."));
         }
-        const forecast = await response.json();
-        return forecast;
-    } catch (error) {
-        console.error('Error fetching weather forecast from Huawei Pangu Weather model:', error);
-        throw error;
-    }
+
+        // Construct the request payload using the location coordinates.
+        const payload = {
+            data: {
+                req_data: [{
+                    lat: location.lat,
+                    lng: location.lng
+                }]
+            }
+        };
+
+        const bodyString = JSON.stringify(payload);
+
+        // Configure the HTTPS request options.
+        const options = {
+            hostname: PANGU_BASE_URL,
+            path: PANGU_API_PATH,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(bodyString),
+                'apikey': PANGU_API_KEY,
+                'email': PANGU_EMAIL
+            }
+        };
+
+        // Send the HTTPS POST request.
+        const req = https.request(options, (res) => {
+            let chunks = [];
+
+            res.on('data', (chunk) => {
+                chunks.push(chunk);
+            });
+
+            res.on('end', () => {
+                const responseBody = Buffer.concat(chunks).toString();
+                try {
+                    const data = JSON.parse(responseBody);
+                    resolve(data);
+                } catch (error) {
+                    reject(new Error("Error parsing JSON response: " + error));
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            reject(new Error("Request error: " + error));
+        });
+
+        req.write(bodyString);
+        req.end();
+    });
 }

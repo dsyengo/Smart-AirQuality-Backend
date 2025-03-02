@@ -90,7 +90,7 @@
 
 import { simulateHuaweiCloudData } from '../utils/simulateHuawiCloudData.js';
 import { EventEmitter } from 'events';
-import { processDataWithModel } from './huaweiModelService.js';
+
 
 // Create an event emitter to broadcast data updates to subscribers (e.g., WebSocket controllers).
 const cloudDataEmitter = new EventEmitter();
@@ -142,8 +142,6 @@ async function updateCloudData() {
         // Emit an event notifying subscribers about the new data.
         cloudDataEmitter.emit('dataUpdated', latestCloudData);
 
-        // Send the updated data to the Huawei Cloud model for further processing.
-        processDataWithModel(latestCloudData);
     }
 }
 
