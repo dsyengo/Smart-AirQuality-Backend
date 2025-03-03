@@ -41,23 +41,3 @@ Analyze the provided sensor data, including pollutant levels, AQI, and health ri
     // Return the generated analysis text.
     return result.response.text();
 }
-
-
-const testData = {
-    sensorData: [
-        { timestamp: "2025-02-25T08:00:00Z", PM2_5: 35, PM10: 50, CO: 0.6, NO2: 20, O3: 30 },
-        { timestamp: "2025-02-25T09:00:00Z", PM2_5: 40, PM10: 55, CO: 0.7, NO2: 22, O3: 28 },
-        { timestamp: "2025-02-25T10:00:00Z", PM2_5: 100, PM10: 120, CO: 1.2, NO2: 60, O3: 70 },
-        { timestamp: "2025-02-25T11:00:00Z", PM2_5: 38, PM10: 53, CO: 0.65, NO2: 21, O3: 29 }
-    ],
-    modelResponse: "The air quality appears to be stable except for a sudden spike in PM2.5 and NO2 at 10:00 AM, which may indicate local pollution sources such as traffic or industrial activity.",
-    AQI: {
-        value: 85,
-        category: "Moderate",
-        healthImplications: "Air quality is acceptable; however, people with respiratory issues should limit prolonged outdoor activities."
-    }
-};
-
-analyzeDataWithGemini(testData)
-    .then((analysis) => console.log("Gemini Analysis:", analysis))
-    .catch((error) => console.error("Error analyzing data with Gemini:", error));

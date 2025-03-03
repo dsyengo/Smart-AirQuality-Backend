@@ -1,5 +1,7 @@
 import https from 'https';
 import { Signer, HttpRequest } from '../utils/signer.js';
+import dotenv from 'dotenv'
+dotenv.config()
 
 // Access credentials from environment variables
 const PREDICTION_MODEL_AK = process.env.HUAWEI_MODEL_SDK_AK;
