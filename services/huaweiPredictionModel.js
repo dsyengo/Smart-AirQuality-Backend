@@ -8,26 +8,7 @@ const PREDICTION_MODEL_AK = process.env.HUAWEI_MODEL_SDK_AK;
 const PREDICTION_MODEL_SK = process.env.HUAWEI_MODEL_SDK_SK;
 const PREDICTION_MODEL_URL = process.env.HUAWEI_PREDICTION_MODEL_URL;
 
-// Define the request payload based on the expected air quality monitoring data format
-const payload = {
-    data: {
-        req_data: [{
-            "Country": "United States",
-            "City": "Santa Cruz",
-            "AQI Value": 50,
-            "CO AQI Value": 1,
-            "CO AQI Category": "Good",
-            "Ozone AQI Value": 30,
-            "Ozone AQI Category": "Good",
-            "NO2 AQI Value": 2,
-            "NO2 AQI Category": "Good",
-            "PM2_5 AQI Value": 45,
-            "PM2_5 AQI Category": "Good",
-            "lat": 36.9741,
-            "lng": -122.0308
-        }]
-    }
-};
+
 
 /**
  * Fetches prediction analysis from the model by signing the request.
@@ -36,8 +17,30 @@ const payload = {
  *
  * @returns {Promise<Object>} Resolves with the model's response.
  */
-export async function getPredictionAnalysis() {
+export async function getPredictionAnalysis(predictioData) {
     return new Promise((resolve, reject) => {
+
+        // Define the request payload based on the expected air quality monitoring data format
+        const payload = {
+            data: {
+                req_data: [{
+                    "Country": "United States",
+                    "City": "Santa Cruz",
+                    "AQI Value": predictioData.AQI,
+                    "CO AQI Value": 1,
+                    "CO AQI Category": "Good",
+                    "Ozone AQI Value": 30,
+                    "Ozone AQI Category": "Good",
+                    "NO2 AQI Value": predictioData.no2,
+                    "NO2 AQI Category": "Good",
+                    "PM2_5 AQI Value": 45,
+                    "PM2_5 AQI Category": "Good",
+                    "lat": 36.9741,
+                    "lng": -122.0308
+                }]
+            }
+        };
+
         // Convert payload to JSON string
         const bodyString = JSON.stringify(payload);
         // Create an HttpRequest object for a POST request with JSON content.
@@ -69,8 +72,3 @@ export async function getPredictionAnalysis() {
     });
 }
 
-// Execute a test call if the module is run directly.
-// The final output is formatted as a JSON string for terminal display.
-getPredictionAnalysis()
-    .then(result => console.log(JSON.stringify({ response: result }, null, 2)))
-    .catch(err => console.error(JSON.stringify({ error: err.message }, null, 2)));

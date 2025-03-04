@@ -5,6 +5,14 @@ const router = express.Router();
 
 // API Endpoint: GET /api/huawei-cloud
 // Returns the latest data fetched from Huawei Cloud.
-router.get('/', getHuaweiCloudData);
+router.get('/huawei-cloud', getHuaweiCloudData);
+
+// router.get('/sensor-data',)
+
+// router.get('/recommendations')
+
+// router.get('/analysis')
+
+// router.get()
 
 export default router;

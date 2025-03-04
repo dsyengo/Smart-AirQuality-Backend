@@ -1,6 +1,7 @@
 import { getLatestData } from '../services/huaweiCloudService.js';
 import { processDataWithModel } from '../services/huaweiModelService.js';
 import { analyzeDataWithGemini } from '../services/geminiNLPService.js';
+import { getPredictionAnalysis } from '../services/huaweiPredictionModel.js';
 import DataModel from '../models/data.js';
 import { calculateAQI } from '../utils/aqiCalculator.js';
 
@@ -26,10 +27,19 @@ export const getHuaweiCloudData = async (req, res, next) => {
             // Assumes sensor data includes a "measurements" object with properties like pm25, pm10, etc.
             const AQI = calculateAQI(data.measurements);
 
+            const predictioData = {
+                modelResponse,
+                AQI
+            }
+            console.log(predictioData)
+            //get prediction analysis
+            const predictionAnalysis = await getPredictionAnalysis(predictioData)
+
             // Consolidate sensor data, model response, and the calculated AQI.
             const combinedData = {
                 sensorData: data,
                 modelResponse,
+                predictionAnalysis,
                 AQI
             };
 

@@ -1,0 +1,1 @@
+import { getLatestData } from '../services/huaweiCloudService.js';

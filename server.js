@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(morgan('combined')) // Use Morgan to log HTTP requests in combined format for detailed logging
 
 //routes
-app.use('/api/huawei-cloud', huaweiCloudRoutes);
+app.use('/api', huaweiCloudRoutes);
 
 // Health check route.
 app.get('/', (req, res) => {
