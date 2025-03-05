@@ -17,7 +17,7 @@ const PREDICTION_MODEL_URL = process.env.HUAWEI_PREDICTION_MODEL_URL;
  *
  * @returns {Promise<Object>} Resolves with the model's response.
  */
-export async function getPredictionAnalysis(predictioData) {
+export async function getPredictionAnalysis(predictionData) {
     return new Promise((resolve, reject) => {
 
         // Define the request payload based on the expected air quality monitoring data format
@@ -26,12 +26,12 @@ export async function getPredictionAnalysis(predictioData) {
                 req_data: [{
                     "Country": "United States",
                     "City": "Santa Cruz",
-                    "AQI Value": predictioData.AQI,
+                    "AQI Value": predictionData.AQI,
                     "CO AQI Value": 1,
                     "CO AQI Category": "Good",
                     "Ozone AQI Value": 30,
                     "Ozone AQI Category": "Good",
-                    "NO2 AQI Value": predictioData.no2,
+                    "NO2 AQI Value": predictionData.no2,
                     "NO2 AQI Category": "Good",
                     "PM2_5 AQI Value": 45,
                     "PM2_5 AQI Category": "Good",

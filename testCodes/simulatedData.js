@@ -1,5 +1,4 @@
-
-import { fetchCloudData } from './simulateData.js'
+import { getLatestData } from '../testCodes/simulateData.js';
 import { processDataWithModel } from '../services/huaweiModelService.js';
 import { analyzeDataWithGemini } from '../services/geminiNLPService.js';
 import { getPredictionAnalysis } from '../services/huaweiPredictionModel.js';
@@ -19,26 +18,45 @@ import { calculateAQI } from '../utils/aqiCalculator.js';
  */
 export const getHuaweiCloudDataSim = async (req, res, next) => {
     try {
-        const data = await fetchCloudData();
+        const data = await getLatestData();
         if (!data) {
             return res.status(404).json({ success: false, message: "No sensor data available" });
         }
 
+        // Extract the measurements from the simulated data.
+        const measurements = data.measurements || {};
+
+        // Create an object with keys exactly as expected by the AQI calculator.
+        const aqiMeasurements = {
+            pm25: measurements.pm25 || 0,
+            pm10: measurements.pm10 || 0,
+            co: measurements.co || 0,
+            no2: measurements.no2 || 0
+        };
+
+        // Prepare all sensor data for further processing
         const allData = {
-            Temperature: data.temperature || 0,
-            Humidity: data.humidity || 0,
-            PM2_5: data.pm25 || 0,
-            PM10: data.pm10 || 0,
-            NO2: data.no2 || 0,
-            SO2: data.so2 || 0,
-            CO: data.co || 0,
+            Temperature: measurements.temperature || 0,
+            Humidity: measurements.humidity || 0,
+            PM2_5: measurements.pm25 || 0,
+            PM10: measurements.pm10 || 0,
+            NO2: measurements.no2 || 0,
+            SO2: measurements.so2 || 0,
+            CO: measurements.co || 0,
             Proximity_to_Industrial_Areas: data.context?.Proximity_to_Industrial_Areas || "Unknown",
             Population_Density: data.context?.Population_Density || "Unknown"
         };
 
+        // Now pass the correctly structured object to calculateAQI.
+        const AQI = calculateAQI(aqiMeasurements);
+
+        // Continue with further processing
         const modelResponse = await processDataWithModel(allData);
-        const AQI = calculateAQI(allData);
-        const predictionAnalysis = await getPredictionAnalysis({ modelResponse, AQI });
+        const predictionData = {
+            AQI,
+            no2: allData.NO2,
+        }
+        const predictionAnalysis = await getPredictionAnalysis(predictionData);
 
         const combinedData = {
             sensorData: allData,

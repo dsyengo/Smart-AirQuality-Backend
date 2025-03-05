@@ -1,86 +1,107 @@
 import { simulateHuaweiCloudData } from './simulateHuawiCloudData.js'
-import { EventEmitter } from 'events';
-import { processDataWithModel } from '../services/huaweiModelService.js';
+import { EventEmitter } from "events";
+import { processDataWithModel } from "../services/huaweiModelService.js";
+import isEqual from "lodash.isequal"; // Deep comparison for accurate change detection
 
-// Create an event emitter to broadcast data updates to subscribers (e.g., WebSocket controllers).
+// Event emitter to notify subscribers (e.g., WebSockets, API controllers)
 const cloudDataEmitter = new EventEmitter();
 
-// This variable stores the most recent data fetched from Huawei Cloud.
+// Store the most recent Huawei Cloud data
 let latestCloudData = null;
 
-// Configure the interval (in milliseconds) for polling. Adjust as needed.
-const POLLING_INTERVAL = process.env.POLLING_INTERVAL || 10000; // default every 10 seconds
+// Define polling interval, ensuring it's a number
+const POLLING_INTERVAL = Number(process.env.POLLING_INTERVAL) || 10000;
 
 /**
- * Simulates fetching data from Huawei Cloud by using the simulation utility.
- * @returns {Promise<Object|null>} Returns the simulated data object.
+ * Fetches simulated data from Huawei Cloud.
+ * @returns {Promise<Object|null>} Simulated data or null in case of an error.
  */
 export async function fetchCloudData() {
     try {
-        // Simulate network delay if needed
-        await new Promise(resolve => setTimeout(resolve, 100));
-        // Generate simulated data
+        await new Promise((resolve) => setTimeout(resolve, 100)); // Simulated delay
+
         const data = simulateHuaweiCloudData();
+
+        // Validate data format
+        if (!data || typeof data !== "object") {
+            throw new Error("Invalid simulated data format: Expected an object.");
+        }
+
         return data;
     } catch (error) {
-        console.error('Error fetching simulated Huawei Cloud data:', error);
+        console.error("Error fetching simulated Huawei Cloud data:", error);
         return null;
     }
 }
 
 /**
- * Compares the newly fetched data with the latest stored data.
- * @param {Object} newData - The newly fetched data.
- * @returns {boolean} True if data has changed, false otherwise.
+ * Checks if the newly fetched data has changed compared to the latest stored data.
+ * @param {Object} newData - Newly fetched data
+ * @returns {boolean} True if the data has changed, otherwise false.
  */
 function hasDataChanged(newData) {
-    // Simple comparison logic (can be enhanced for deep comparisons or specific properties).
-    return JSON.stringify(newData) !== JSON.stringify(latestCloudData);
+    return !isEqual(newData, latestCloudData);
 }
 
 /**
- * Updates stored cloud data if changes are detected.
- * Also triggers further processing by sending data to the Huawei Cloud model service
- * and emits an event to notify subscribers (e.g., frontend via websockets or API controllers).
+ * Updates cloud data if new changes are detected.
+ * Notifies subscribers and sends data for processing.
  */
 async function updateCloudData() {
-    const newData = await fetchCloudData();
-    if (newData && hasDataChanged(newData)) {
-        latestCloudData = newData;
-        console.log('New simulated data fetched from Huawei Cloud:', latestCloudData);
+    try {
+        const newData = await fetchCloudData();
 
-        // Emit an event notifying subscribers about the new data.
-        cloudDataEmitter.emit('dataUpdated', latestCloudData);
+        if (newData && hasDataChanged(newData)) {
+            latestCloudData = newData;
+            console.log("New simulated data fetched from Huawei Cloud:", latestCloudData);
 
-        // Send the updated data to the Huawei Cloud model for further processing.
-        processDataWithModel(latestCloudData);
+            // Emit event to notify subscribers
+            cloudDataEmitter.emit("dataUpdated", latestCloudData);
+
+            // Process data with Huawei Cloud model
+            await processDataWithModel(latestCloudData);
+        }
+    } catch (error) {
+        console.error("Error updating cloud data:", error);
     }
 }
 
 /**
- * Starts a polling mechanism that monitors changes in Huawei Cloud data.
- * The process runs continuously at the specified polling interval.
+ * Starts polling to monitor Huawei Cloud data.
+ * This process continuously fetches and checks for updates at the defined interval.
  */
 export function startDataMonitoring() {
-    // Immediately fetch data once.
+    console.log(`Starting Huawei Cloud data monitoring... (Polling every ${POLLING_INTERVAL}ms)`);
+
+    // Initial fetch
     updateCloudData();
 
-    // Setup polling at the specified interval.
-    setInterval(updateCloudData, POLLING_INTERVAL);
+    // Set up polling with error handling
+    setInterval(async () => {
+        try {
+            await updateCloudData();
+        } catch (error) {
+            console.error("Polling error:", error);
+        }
+    }, POLLING_INTERVAL);
 }
 
 /**
- * Returns the most recent Huawei Cloud data.
- * @returns {Object|null} The latest cloud data.
+ * Retrieves the latest available Huawei Cloud data.
+ * @returns {Object|null} The most recent cloud data.
  */
 export function getLatestData() {
     return latestCloudData;
 }
 
 /**
- * Allows subscribers (e.g., endpoints or WebSocket controllers) to listen for data updates.
- * @param {Function} callback - Function to call when new data is available.
+ * Allows external subscribers (e.g., API routes, WebSockets) to listen for data updates.
+ * @param {Function} callback - Callback function triggered when new data is available.
+ * @returns {Function} Unsubscribe function to remove the listener when no longer needed.
  */
 export function subscribeToDataUpdates(callback) {
-    cloudDataEmitter.on('dataUpdated', callback);
+    cloudDataEmitter.on("dataUpdated", callback);
+
+    // Return function to allow unsubscription
+    return () => cloudDataEmitter.off("dataUpdated", callback);
 }

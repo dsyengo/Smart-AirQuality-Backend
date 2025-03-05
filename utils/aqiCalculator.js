@@ -8,13 +8,19 @@
  * - CO: AQI = co * 10.
  * - NO2: AQI = no2 * 0.5.
  *
- * You can adjust these factors based on local standards or detailed models.
+ * Note: The function expects an object with the following keys:
+ * { pm25, pm10, co, no2 }
+ *
+ * If these keys are missing or if an object with different property names is passed,
+ * the default value of 0 will be used, leading to an AQI of 0.
  *
  * @param {Object} measurements - Object containing pollutant data (e.g., { pm25, pm10, co, no2 }).
  * @returns {number} The calculated overall AQI, determined as the maximum individual pollutant index.
  */
 export function calculateAQI(measurements) {
+    // Destructure the expected properties with default values of 0
     const { pm25 = 0, pm10 = 0, co = 0, no2 = 0 } = measurements;
+
     const aqiPm25 = Math.round(pm25);
     const aqiPm10 = Math.round(pm10 * 0.8);
     const aqiCo = Math.round(co * 10);

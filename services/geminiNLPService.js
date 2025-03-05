@@ -27,7 +27,8 @@ Analyze the provided sensor data, including pollutant levels, AQI, and health ri
 - Offer health and safety recommendations based on AQI levels and health risks.
 - Do not alter or modify any numerical sensor measurements.
 - Format your response in clear, structured paragraphs, making it easy to understand for non-technical users.
-- Keep the explanation precise, actionable, and based on the latest available data.`;
+- Keep the explanation precise, actionable, and based on the latest available data.
+- Also make sure that the response is in 10 lines and categorize them making sure that i can easily use them on the frontend`;
 
     // Format the input data as a JSON string for clarity.
     const userPrompt = JSON.stringify(inputData, null, 2);
