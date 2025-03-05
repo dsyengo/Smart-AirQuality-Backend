@@ -62,8 +62,3 @@ export function simulateHuaweiCloudData() {
         }
     };
 }
-
-// For testing purposes, you can run this file directly with Node.js.
-if (process.argv[1] && process.argv[1].endsWith('simulator.js')) {
-    console.log(JSON.stringify(simulateHuaweiCloudData(), null, 2));
-}

@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import connectDatabase from './config/database.js';
 import huaweiCloudRoutes from './routes/huaweiCloudRoutes.js';
-import { startDataMonitoring } from './services/huaweiCloudService.js';
+import { startDataMonitoring } from './testCodes/simulateData.js';
 
 dotenv.config()
 

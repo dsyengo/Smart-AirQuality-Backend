@@ -1,4 +1,5 @@
-import { getLatestData } from '../services/huaweiCloudService.js';
+
+import { fetchLatestCloudData } from '../services/huaweiCloudService.js'
 import { processDataWithModel } from '../services/huaweiModelService.js';
 import { analyzeDataWithGemini } from '../services/geminiNLPService.js';
 import { getPredictionAnalysis } from '../services/huaweiPredictionModel.js';
@@ -18,14 +19,33 @@ import { calculateAQI } from '../utils/aqiCalculator.js';
  */
 export const getHuaweiCloudData = async (req, res, next) => {
     try {
-        const data = await getLatestData();
-        if (data) {
+        const data = await fetchLatestCloudData();
+
+        const allData = {
+            Temperature: data.temperature,
+            Humidity: data.humidity,
+            PM2_5: data.pm25 || 20,
+            PM10: data.pm10 || 10,
+            NO2: data.no2 || 14,
+            SO2: data.so2 || 14,
+            CO: data.co || 14,
+            Proximity_to_Industrial_Areas: data.context?.Proximity_to_Industrial_Areas || 0.89,
+            Population_Density: data.context?.Population_Density || 3000
+        }
+        aqiData = {
+            PM2_5: data.pm25 || 20,
+            PM10: data.pm10 || 10,
+            NO2: data.no2 || 14,
+            SO2: data.so2 || 14,
+            CO: data.co || 14,
+        }
+        if (allData) {
             // Process the sensor data with the Huawei Model service.
-            const modelResponse = await processDataWithModel(data);
+            const modelResponse = await processDataWithModel(allData);
 
             // Calculate the Air Quality Index (AQI) using pollutant measurements.
             // Assumes sensor data includes a "measurements" object with properties like pm25, pm10, etc.
-            const AQI = calculateAQI(data.measurements);
+            const AQI = calculateAQI(aqiData);
 
             const predictioData = {
                 modelResponse,
@@ -37,7 +57,7 @@ export const getHuaweiCloudData = async (req, res, next) => {
 
             // Consolidate sensor data, model response, and the calculated AQI.
             const combinedData = {
-                sensorData: data,
+                sensorData: allData,
                 modelResponse,
                 predictionAnalysis,
                 AQI
@@ -60,6 +80,8 @@ export const getHuaweiCloudData = async (req, res, next) => {
                 success: true,
                 data: savedEntry,
             });
+
+            console.log('Data sent to client:', savedEntry)
         } else {
             res.status(503).json({
                 success: false,

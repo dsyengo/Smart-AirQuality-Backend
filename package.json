@@ -26,6 +26,10 @@
     "moment": "^2.30.1",
     "mongoose": "^8.11.0",
     "morgan": "^1.10.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "@serialport/parser-readline": "^11.0.1",
+    "esdk-obs-nodejs": "^3.24.3",
+    "obs-sdk": "^0.1.0",
+    "serialport": "^11.0.1"
   }
 }

@@ -29,22 +29,22 @@ const HUAWEI_MODEL_URL = process.env.HUAWEI_MODEL_API_URL       // e.g., "https:
  * @param {Object} data - Sensor data containing air quality measurements and context information.
  * @returns {Promise<Object>} The parsed JSON response from the Huawei Model API.
  */
-export async function processDataWithModel(data) {
+export async function processDataWithModel(allData) {
     return new Promise((resolve, reject) => {
         // Construct the payload according to the model's expected format.
         const payload = {
             data: {
                 req_data: [
                     {
-                        Temperature: data.measurements.temperature,
-                        Humidity: data.measurements.humidity,
-                        PM2_5: data.measurements.pm25,
-                        PM10: data.measurements.pm10,
-                        NO2: data.measurements.no2,
-                        SO2: data.measurements.so2,
-                        CO: data.measurements.co,
-                        Proximity_to_Industrial_Areas: data.context?.Proximity_to_Industrial_Areas,
-                        Population_Density: data.context?.Population_Density
+                        Temperature: allData.Temperature,
+                        Humidity: allData.Humidity,
+                        PM2_5: allData.pm25 || 20,
+                        PM10: allData.pm10 || 10,
+                        NO2: allData.no2 || 14,
+                        SO2: allData.so2 || 14,
+                        CO: allData.co || 14,
+                        Proximity_to_Industrial_Areas: allData.context?.Proximity_to_Industrial_Areas || 200,
+                        Population_Density: allData.context?.Population_Density || 3000
                     }
                 ]
             }
