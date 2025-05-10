@@ -19,6 +19,7 @@ import errorHandler from './middleware/errorHandler.js';
 import connectDatabase from './config/database.js';
 import { logger } from './middleware/logger.js';
 import huaweiCloudRoutes from './routes/huaweiCloudRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import { startRealTimeMonitoring } from './services/realTimeDataService.js';
 import { initRealtimeDataStream } from './controllers/dataMonitor.js';
 
@@ -30,10 +31,10 @@ validateEnv();
 const app = express();
 const server = createServer(app);
 
-// Database connection
+// Database connection  
 connectDatabase().then(() => {
     // Start real-time monitoring after DB connects
-    startRealTimeMonitoring();  
+    startRealTimeMonitoring();
 
     // Initialize WebSocket server
     // initRealtimeDataStream(server);
@@ -49,6 +50,7 @@ connectDatabase().then(() => {
     app.use(securityMiddleware);
 
     // Routes
+    app.use('/api/auth', authRoutes);
     app.use('/api', apiLimiter, huaweiCloudRoutes);
     app.get('/health', healthCheck);
     app.use(errorHandler);
