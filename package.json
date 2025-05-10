@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
     "start:dev": "nodemon"
   },
   "keywords": [],
@@ -19,18 +19,27 @@
     "@serialport/parser-readline": "^11.0.1",
     "axios": "^1.8.1",
     "body-parser": "^1.20.3",
+    "chalk": "^5.4.1",
+    "compression": "^1.8.0",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "esdk-obs-nodejs": "^3.24.3",
     "express": "^4.21.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-prom-bundle": "^8.0.0",
+    "express-rate-limit": "^7.5.0",
     "fs-extra": "^11.3.0",
     "helmet": "^8.0.0",
+    "hpp": "^0.2.3",
     "lodash.isequal": "^4.5.0",
+    "log4js": "^6.9.1",
     "moment": "^2.30.1",
     "mongoose": "^8.11.0",
     "morgan": "^1.10.0",
     "node-fetch": "^3.3.2",
     "obs-sdk": "^0.1.0",
-    "serialport": "^11.0.1"
+    "serialport": "^11.0.1",
+    "ws": "^8.18.1"
   }
 }

@@ -1,13 +1,13 @@
 import { config } from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-config(); // Load environment variables from .env file
+config();
 
 // Initialize the Google Generative AI client using the API key from environment variables.
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Select the Gemini model to generate content.
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 /**
  * Uses the Gemini NLP model to analyze environmental data.

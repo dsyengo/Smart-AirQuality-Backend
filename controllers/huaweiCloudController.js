@@ -29,10 +29,10 @@ export const getHuaweiCloudData = async (req, res, next) => {
             NO2: data.no2 || 14,
             SO2: data.so2 || 14,
             CO: data.co || 14,
-            Proximity_to_Industrial_Areas: data.context?.Proximity_to_Industrial_Areas || 0.89,
-            Population_Density: data.context?.Population_Density || 3000
+            Proximity_to_Industrial_Areas: data?.context?.Proximity_to_Industrial_Areas || 0.89,
+            Population_Density: data?.context?.Population_Density || 3000
         }
-        aqiData = {
+        const aqiData = {
             PM2_5: data.pm25 || 20,
             PM10: data.pm10 || 10,
             NO2: data.no2 || 14,
