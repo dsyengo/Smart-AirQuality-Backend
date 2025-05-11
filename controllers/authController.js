@@ -4,72 +4,136 @@ import jwt from 'jsonwebtoken'
 import transporter from '../services/nodemailer.js'
 import { verifyAccountTemplate, passwordResetTemplate } from '../utils/otpTemplate.js'
 
+
 export const register = async (req, res) => {
     try {
         const { email, name, password } = req.body;
 
         if (!email || !name || !password) {
-            return res.json({ success: false, message: "Fill in all the details" })
+            return res.status(400).json({
+                success: false,
+                message: "Fill in all the details"
+            });
         }
 
-        const existingUser = await userModel.findOne({ email })
+        const existingUser = await userModel.findOne({ email });
 
         if (existingUser) {
-            return res.json({ success: false, message: 'User already exists, please proceed to Login' })
+            return res.status(409).json({
+                success: false,
+                message: 'User already exists, please proceed to Login'
+            });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = new userModel({
             name: name,
             email: email,
-            password: hashedPassword
-        })
+            password: hashedPassword,
+            profile: {
+                isProfileComplete: false
+            }
+        });
 
         await user.save();
 
-        return res.json({ success: true, message: 'Account created succesfully, Please Login' })
+        // Generate token for immediate login after registration
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 2 * 24 * 60 * 60 * 1000,
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
+        });
+
+        return res.status(201).json({
+            success: true,
+            token,
+            userId: user._id,
+            email: user.email,
+            name: user.name,
+            expiresIn: 3600,
+            isProfileComplete: user.profile.isProfileComplete,
+            message: 'Account created successfully'
+        });
 
     } catch (error) {
-        return res.json({ success: false, message: `Error occured ${error.message}` })
+        console.error('Registration error:', error);
+        return res.status(500).json({
+            success: false,
+            message: `Error occurred: ${error.message}`
+        });
     }
-}
+};
 
-//Login
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.json({ success: false, message: "Missing details" })
+            return res.status(400).json({
+                success: false,
+                message: "Missing details"
+            });
         }
 
-        const existingUser = await userModel.findOne({ email })
+        const existingUser = await userModel.findOne({ email });
 
         if (!existingUser) {
-            return res.json({ success: false, message: "User not found, Please Sign Up" })
+            return res.status(404).json({
+                success: false,
+                message: "User not found, Please Sign Up"
+            });
         }
 
-        const isMatch = await bcrypt.compare(password, existingUser.password)
+        const isMatch = await bcrypt.compare(password, existingUser.password);
 
-        if (isMatch) {
-            const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' })
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 2 * 24 * 60 * 60 * 1000,
-                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
-            })
-        } else {
-            return res.json({ success: false, message: "Invalid Passord, Please try again" })
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid Password, Please try again"
+            });
         }
 
-        return res.json({ success: true, message: "User Logged in Succesfully" })
+        const token = jwt.sign(
+            { id: existingUser._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '5d' }
+        );
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: false,
+            maxAge: 2 * 24 * 60 * 60 * 1000,
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'none',
+        });
+
+        return res.status(200).json({
+            success: true,
+            token,
+            userId: existingUser._id,
+            email: existingUser.email,
+            name: existingUser.name,
+            expiresIn: 5 * 24 * 60 * 60,
+            isProfileComplete: existingUser.profile?.isProfileComplete || false,
+            profile: existingUser.profile || null,
+            message: "User logged in successfully"
+        });
 
     } catch (error) {
-        return res.json({ success: false, message: `Error occured ${error.message}` })
+        console.error('Login error:', error);
+        return res.status(500).json({
+            success: false,
+            message: `Error occurred: ${error.message}`
+        });
     }
-}
+};
 
 
 //logout

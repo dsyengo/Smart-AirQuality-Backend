@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import compression from 'compression';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
 import {
     securityMiddleware,
@@ -20,6 +21,7 @@ import connectDatabase from './config/database.js';
 import { logger } from './middleware/logger.js';
 import huaweiCloudRoutes from './routes/huaweiCloudRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import { startRealTimeMonitoring } from './services/realTimeDataService.js';
 import { initRealtimeDataStream } from './controllers/dataMonitor.js';
 
@@ -46,11 +48,13 @@ connectDatabase().then(() => {
     app.use(express.urlencoded({ extended: true }));
     app.use(cors(corsOptions));
     app.use(morgan('combined'));
-    app.use(metricsMiddleware);
+    app.use(cookieParser());
+    // app.use(metricsMiddleware());
     app.use(securityMiddleware);
 
     // Routes
     app.use('/api/auth', authRoutes);
+    app.use('/api/users', userRoutes)
     app.use('/api', apiLimiter, huaweiCloudRoutes);
     app.get('/health', healthCheck);
     app.use(errorHandler);
@@ -59,7 +63,7 @@ connectDatabase().then(() => {
     setupGracefulShutdown(server);
 
     // Start server
-    app.listen(process.env.PORT, () => {
+    app.listen(process.env.PORT, '0.0.0.0', () => {
         console.log(`Server running on port ${process.env.PORT}`);
         // console.log(`Real-time monitoring: ${realTimeDataService.isMonitoring ? 'ACTIVE' : 'INACTIVE'}`);
     });
