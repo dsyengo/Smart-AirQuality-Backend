@@ -24,20 +24,20 @@ export const getHuaweiCloudData = async (req, res, next) => {
         const allData = {
             Temperature: data.temperature,
             Humidity: data.humidity,
-            PM2_5: data.pm25 || 20,
-            PM10: data.pm10 || 10,
-            NO2: data.no2 || 14,
-            SO2: data.so2 || 14,
-            CO: data.co || 14,
+            PM2_5: data.pm25,
+            PM10: data.pm10,
+            NO2: data.no2,
+            SO2: data.so2,
+            CO: data.co,
             Proximity_to_Industrial_Areas: data?.context?.Proximity_to_Industrial_Areas || 0.89,
             Population_Density: data?.context?.Population_Density || 3000
         }
         const aqiData = {
-            PM2_5: data.pm25 || 20,
-            PM10: data.pm10 || 10,
-            NO2: data.no2 || 14,
-            SO2: data.so2 || 14,
-            CO: data.co || 14,
+            PM2_5: data.pm25,
+            PM10: data.pm10,
+            NO2: data.no2,
+            SO2: data.so2,
+            CO: data.co,
         }
         if (allData) {
             // Process the sensor data with the Huawei Model service.

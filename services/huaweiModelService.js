@@ -2,8 +2,8 @@ import https from 'https';
 import { Signer, HttpRequest } from '../utils/signer.js';
 
 const HUAWEI_MODEL_AK = process.env.HUAWEI_MODEL_SDK_AK;
-const HUAWEI_MODEL_SK = process.env.HUAWEI_MODEL_SDK_SK
-const HUAWEI_MODEL_URL = process.env.HUAWEI_MODEL_API_URL       // e.g., "https://<host>/v1/infers/<model-id>"
+const HUAWEI_MODEL_SK = process.env.HUAWEI_MODEL_SDK_SK;
+const HUAWEI_MODEL_URL = process.env.HUAWEI_MODEL_API_URL;
 
 /**
  * Posts sensor data to the Huawei Model endpoint for inference.
@@ -38,11 +38,11 @@ export async function processDataWithModel(allData) {
                     {
                         Temperature: allData.Temperature,
                         Humidity: allData.Humidity,
-                        PM2_5: allData.pm25 || 20,
-                        PM10: allData.pm10 || 10,
-                        NO2: allData.no2 || 14,
-                        SO2: allData.so2 || 14,
-                        CO: allData.co || 14,
+                        PM2_5: allData.pm25,
+                        PM10: allData.pm10,
+                        NO2: allData.no2,
+                        SO2: allData.so2,
+                        CO: allData.co,
                         Proximity_to_Industrial_Areas: allData.context?.Proximity_to_Industrial_Areas || 200,
                         Population_Density: allData.context?.Population_Density || 3000
                     }

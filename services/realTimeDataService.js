@@ -6,7 +6,7 @@ dotenv.config();
 
 const OBS_BUCKET = process.env.OBS_BUCKET;
 const FILE_KEY = 'sensor-data/data.json';
-const REAL_TIME_POLL_INTERVAL = Number(process.env.REAL_TIME_POLL_INTERVAL) || 3000;
+const REAL_TIME_POLL_INTERVAL = Number(process.env.REAL_TIME_POLL_INTERVAL) || 5000;
 const DEBUG_MODE = process.env.DEBUG_MODE === 'true';
 
 // Initialize Huawei OBS Client if not already initialized
