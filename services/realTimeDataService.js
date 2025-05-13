@@ -1,15 +1,15 @@
 import { EventEmitter } from 'events';
 import ObsClient from 'esdk-obs-nodejs';
 import dotenv from 'dotenv';
+import fs from 'fs/promises';
 
 dotenv.config();
 
 const OBS_BUCKET = process.env.OBS_BUCKET;
-const FILE_KEY = 'sensor-data/data.json';
+const FILE_KEY = process.env.FILE_KEY;
 const REAL_TIME_POLL_INTERVAL = Number(process.env.REAL_TIME_POLL_INTERVAL) || 5000;
 const DEBUG_MODE = process.env.DEBUG_MODE === 'true';
 
-// Initialize Huawei OBS Client if not already initialized
 if (!global.obsClient) {
     global.obsClient = new ObsClient({
         access_key_id: process.env.OBS_AK,
@@ -22,9 +22,7 @@ if (!global.obsClient) {
 class RealTimeDataService extends EventEmitter {
     constructor() {
         super();
-        this.lastETag = null;
-        this.lastModified = null;
-        this.lastTimestamp = null;
+        this.lastTimestamp = null; // Tracks the latest rtcTime processed
         this.isMonitoring = false;
         this.pollingInterval = null;
         this.retryCount = 0;
@@ -33,23 +31,31 @@ class RealTimeDataService extends EventEmitter {
         this.maxConsecutiveErrors = 3;
     }
 
-    /**
-     * Fetches the latest data from OBS and checks for changes
-     * @returns {Promise<Array|null>} Array of new entries or null if no changes
-     */
+    // Normalize rtcTime to valid ISO format (e.g., "2023-05-12 6:5:44" -> "2023-05-12T06:05:44")
+    normalizeRtcTime(rtcTime) {
+        if (!rtcTime) return null;
+        try {
+            const [date, time] = rtcTime.split(' ');
+            const [year, month, day] = date.split('-').map(Number);
+            let [hour, minute, second] = time.split(':').map(Number);
+            hour = hour.toString().padStart(2, '0');
+            minute = minute.toString().padStart(2, '0');
+            second = second.toString().padStart(2, '0');
+            return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hour}:${minute}:${second}`;
+        } catch (error) {
+            console.warn("[REALTIME] Failed to normalize rtcTime:", rtcTime, error.message);
+            return null;
+        }
+    }
+
     async fetchLatest() {
         const params = {
             Bucket: OBS_BUCKET,
-            Key: FILE_KEY,
-            IfNoneMatch: this.lastETag,
-            IfModifiedSince: this.lastModified
+            Key: FILE_KEY
         };
 
         if (DEBUG_MODE) {
-            console.debug("[DEBUG] Fetching with params:", {
-                IfNoneMatch: this.lastETag,
-                IfModifiedSince: this.lastModified
-            });
+            console.debug("[DEBUG] Fetching with params:", params);
         }
 
         try {
@@ -66,64 +72,67 @@ class RealTimeDataService extends EventEmitter {
                 }
             }
 
-            // Handle 304 Not Modified
-            if (result.CommonMsg.Status === 304) {
-                if (DEBUG_MODE) console.debug("[DEBUG] OBS returned 304 - no changes");
-                this.consecutiveErrors = 0;
-                return null;
-            }
-
-            // Handle 200 OK
             if (result.CommonMsg.Status === 200) {
                 if (!result.InterfaceResult?.Content) {
                     console.warn("[REALTIME] OBS returned 200 but no content");
                     return null;
                 }
 
+                const rawContent = result.InterfaceResult.Content.toString();
                 let dataArray;
+
+                if (DEBUG_MODE) {
+                    try {
+                        await fs.writeFile('debug_sensor_data.json', rawContent);
+                        console.debug("[DEBUG] Saved raw content to debug_sensor_data.json");
+                    } catch (writeError) {
+                        console.error("[DEBUG] Failed to write debug_sensor_data.json:", writeError.message);
+                    }
+                }
+
                 try {
-                    dataArray = JSON.parse(result.InterfaceResult.Content.toString());
-                    if (DEBUG_MODE) console.debug("[DEBUG] Parsed data length:", dataArray?.length);
-                } catch (parseError) {
-                    console.error("[REALTIME] Failed to parse OBS content:", parseError.message);
+                    // Parse NDJSON directly
+                    dataArray = rawContent
+                        .split('\n')
+                        .filter(line => line.trim())
+                        .map((line, index) => {
+                            try {
+                                return JSON.parse(line);
+                            } catch (lineError) {
+                                console.error(`[REALTIME] Failed to parse NDJSON line ${index + 1}:`, lineError.message);
+                                return null;
+                            }
+                        })
+                        .filter(item => item !== null);
+                    if (DEBUG_MODE) console.debug("[DEBUG] Parsed NDJSON data, length:", dataArray.length);
+                } catch (ndjsonError) {
+                    console.error("[REALTIME] Failed to parse NDJSON content:", ndjsonError.message);
+                    console.error("[DEBUG] Raw content:", rawContent);
                     return null;
                 }
 
-                // Validate data format
                 if (!Array.isArray(dataArray)) {
-                    console.warn("[REALTIME] Data is not an array - resetting tracking");
-                    this.resetTracking();
+                    console.warn("[REALTIME] Data is not an array");
                     return null;
                 }
 
-                // Get current headers
-                const currentETag = result.InterfaceResult.ETag;
-                const currentLastModified = result.InterfaceResult.LastModified;
-
-                // Verify if content actually changed
-                if (currentETag === this.lastETag && currentLastModified === this.lastModified) {
-                    if (DEBUG_MODE) console.debug("[DEBUG] ETag and LastModified unchanged despite 200 response");
+                if (dataArray.length === 0) {
+                    console.warn("[REALTIME] Data array is empty");
                     return null;
                 }
 
-                // Update tracking headers
-                this.lastETag = currentETag;
-                this.lastModified = currentLastModified;
+                const latestEntry = this.findLatestEntry(dataArray);
 
-                // Find new entries
-                const newEntries = this.findNewEntries(dataArray);
-
-                if (newEntries.length > 0) {
+                if (latestEntry) {
                     this.consecutiveErrors = 0;
-                    console.log(`[REALTIME] Found ${newEntries.length} new entries`);
-                    return newEntries;
+                    console.log("[REALTIME] Found latest entry with rtcTime:", latestEntry.rtcTime);
+                    return [latestEntry]; // Return as array for consistency
                 } else {
-                    if (DEBUG_MODE) console.debug("[DEBUG] No new entries found");
+                    if (DEBUG_MODE) console.debug("[DEBUG] No valid entries found");
                     return null;
                 }
             }
 
-            // Handle other status codes
             console.warn(`[REALTIME] Unexpected OBS status: ${result.CommonMsg.Status}`);
             return null;
 
@@ -132,56 +141,41 @@ class RealTimeDataService extends EventEmitter {
         }
     }
 
-    /**
-     * Finds new entries in the data array
-     * @param {Array} dataArray - Array of data entries
-     * @returns {Array} Array of new entries
-     */
-    findNewEntries(dataArray) {
-        const newEntries = [];
+    findLatestEntry(dataArray) {
+        if (!dataArray || dataArray.length === 0) return null;
+
+        let latestEntry = null;
+        let latestDate = this.lastTimestamp ? new Date(this.normalizeRtcTime(this.lastTimestamp)) : null;
 
         for (const entry of dataArray) {
-            if (!entry?.timestamp) continue;
+            if (!entry?.rtcTime) continue;
+
+            const normalizedTime = this.normalizeRtcTime(entry.rtcTime);
+            if (!normalizedTime) continue;
 
             try {
-                const entryDate = new Date(entry.timestamp);
+                const entryDate = new Date(normalizedTime);
                 if (isNaN(entryDate.getTime())) continue;
 
-                if (!this.lastTimestamp || entryDate > new Date(this.lastTimestamp)) {
-                    newEntries.push(entry);
+                if (!latestDate || entryDate > latestDate) {
+                    latestEntry = entry;
+                    latestDate = entryDate;
                 }
             } catch (dateError) {
-                console.warn("[REALTIME] Invalid timestamp format:", entry.timestamp);
+                console.warn("[REALTIME] Invalid rtcTime format:", entry.rtcTime);
                 continue;
             }
         }
 
-        // Update last timestamp if we found new entries
-        if (newEntries.length > 0) {
-            const latestEntry = newEntries.reduce((latest, entry) => {
-                const entryDate = new Date(entry.timestamp);
-                const latestDate = new Date(latest.timestamp);
-                return entryDate > latestDate ? entry : latest;
-            }, newEntries[0]);
-
-            this.lastTimestamp = latestEntry.timestamp;
+        if (latestEntry && (!this.lastTimestamp || new Date(this.normalizeRtcTime(latestEntry.rtcTime)) > new Date(this.normalizeRtcTime(this.lastTimestamp)))) {
+            this.lastTimestamp = latestEntry.rtcTime;
+            return latestEntry;
         }
 
-        return newEntries;
+        return null;
     }
 
-    /**
-     * Handles fetch errors
-     * @param {Error} error - The error object
-     * @returns {null}
-     */
     handleFetchError(error) {
-        if (error.code === 'NotModified') {
-            if (DEBUG_MODE) console.debug("[DEBUG] OBS client reported NotModified");
-            this.consecutiveErrors = 0;
-            return null;
-        }
-
         console.error(`[REALTIME-ERROR] Fetch error: ${error.message}`);
         this.consecutiveErrors++;
         this.retryCount++;
@@ -200,18 +194,10 @@ class RealTimeDataService extends EventEmitter {
         return null;
     }
 
-    /**
-     * Resets tracking headers and timestamp
-     */
     resetTracking() {
-        this.lastETag = null;
-        this.lastModified = null;
         this.lastTimestamp = null;
     }
 
-    /**
-     * Starts the real-time monitoring service
-     */
     startMonitoring() {
         if (this.isMonitoring) {
             console.log("[REALTIME] Monitoring is already running");
@@ -223,113 +209,138 @@ class RealTimeDataService extends EventEmitter {
         this.retryCount = 0;
         this.consecutiveErrors = 0;
 
-        // Initial fetch to establish baseline
+        this.pollingInterval = setInterval(async () => {
+            try {
+                const latestData = await this.fetchLatest();
+                if (latestData && latestData.length > 0) {
+                    this.emit('data', latestData);
+                }
+            } catch (err) {
+                console.error(`[REALTIME] Polling error: ${err.message}`);
+            }
+        }, REAL_TIME_POLL_INTERVAL);
+
         this.initialFetch()
             .then(() => {
-                // Start polling after initial fetch
-                this.pollingInterval = setInterval(async () => {
-                    try {
-                        const latestData = await this.fetchLatest();
-                        if (latestData && latestData.length > 0) {
-                            this.emit('data', latestData);
-                        }
-                    } catch (err) {
-                        console.error(`[REALTIME] Polling error: ${err.message}`);
-                    }
-                }, REAL_TIME_POLL_INTERVAL);
+                if (DEBUG_MODE) console.debug("[DEBUG] Initial fetch completed successfully");
             })
             .catch(err => {
                 console.error(`[REALTIME] Initial fetch failed: ${err.message}`);
-                this.isMonitoring = false;
             });
     }
 
-    /**
-     * Performs initial fetch to establish baseline
-     */
     async initialFetch() {
         const params = {
             Bucket: OBS_BUCKET,
             Key: FILE_KEY
         };
 
-        const result = await global.obsClient.getObject(params);
-        if (result.CommonMsg.Status === 200) {
-            this.lastETag = result.InterfaceResult.ETag;
-            this.lastModified = result.InterfaceResult.LastModified;
-
-            const dataArray = JSON.parse(result.InterfaceResult.Content.toString());
-
-            if (Array.isArray(dataArray) && dataArray.length > 0) {
-                // Get the most recent entry
-                const latestEntry = dataArray.reduce((latest, entry) => {
-                    const entryDate = new Date(entry.timestamp);
-                    const latestDate = new Date(latest.timestamp);
-                    return entryDate > latestDate ? entry : latest;
-                }, dataArray[0]);
-
-                this.lastTimestamp = latestEntry.timestamp;
-
-                if (DEBUG_MODE) {
-                    console.debug("[DEBUG] Initial fetch successful. Latest timestamp:", this.lastTimestamp);
+        try {
+            const result = await global.obsClient.getObject(params);
+            if (result.CommonMsg.Status === 200) {
+                if (!result.InterfaceResult?.Content) {
+                    console.warn('[REALTIME] Initial fetch returned no content');
+                    return;
                 }
 
-                // Emit the latest data point
-                this.emit('data', [latestEntry]);
+                const rawContent = result.InterfaceResult.Content.toString();
+                let dataArray;
+
+                if (DEBUG_MODE) {
+                    try {
+                        await fs.writeFile('debug_sensor_data_initial.json', rawContent);
+                        console.debug("[DEBUG] Saved initial fetch content to debug_sensor_data_initial.json");
+                    } catch (writeError) {
+                        console.error("[DEBUG] Failed to write debug_sensor_data_initial.json:", writeError.message);
+                    }
+                }
+
+                try {
+                    dataArray = rawContent
+                        .split('\n')
+                        .filter(line => line.trim())
+                        .map((line, index) => {
+                            try {
+                                return JSON.parse(line);
+                            } catch (lineError) {
+                                console.error(`[REALTIME] Failed to parse initial fetch NDJSON line ${index + 1}:`, lineError.message);
+                                return null;
+                            }
+                        })
+                        .filter(item => item !== null);
+                    if (DEBUG_MODE) console.debug("[DEBUG] Parsed initial fetch NDJSON data, length:", dataArray.length);
+                } catch (ndjsonError) {
+                    console.error("[REALTIME] Failed to parse initial fetch NDJSON content:", ndjsonError.message);
+                    console.error("[DEBUG] Initial fetch raw content:", rawContent);
+                    return;
+                }
+
+                if (!Array.isArray(dataArray)) {
+                    console.warn('[REALTIME] Initial fetch data is not an array');
+                    return;
+                }
+
+                if (dataArray.length === 0) {
+                    console.warn('[REALTIME] Initial fetch data array is empty');
+                    return;
+                }
+
+                const latestEntry = this.findLatestEntry(dataArray);
+
+                if (latestEntry) {
+                    this.lastTimestamp = latestEntry.rtcTime;
+                    if (DEBUG_MODE) {
+                        console.debug("[DEBUG] Initial fetch successful. Latest timestamp:", this.lastTimestamp);
+                    }
+                    this.emit('data', [latestEntry]);
+                } else {
+                    console.warn('[REALTIME] No valid entries found in initial fetch');
+                }
+            } else {
+                console.error('[DEBUG] Initial fetch response:', result);
+                throw new Error(`Initial fetch failed with status ${result.CommonMsg.Status}`);
             }
-        } else {
-            throw new Error(`Initial fetch failed with status ${result.CommonMsg.Status}`);
+        } catch (error) {
+            console.error('[DEBUG] Initial fetch error details:', error);
+            throw error;
         }
     }
 
-    /**
-     * Stops the real-time monitoring service
-     */
     stopMonitoring() {
         if (this.pollingInterval) {
             clearInterval(this.pollingInterval);
             this.pollingInterval = null;
         }
         this.isMonitoring = false;
+        if (global.obsClient) {
+            try {
+                global.obsClient.close();
+                console.log('[DEBUG] OBS client closed');
+            } catch (error) {
+                console.error('[DEBUG] Error closing OBS client:', error.message);
+            }
+        }
         console.log("[REALTIME] Monitoring stopped");
     }
 }
 
-// Singleton instance
 const realTimeService = new RealTimeDataService();
 
-// Export the singleton instance and main methods
 export const realTimeDataService = realTimeService;
 
-/**
- * Starts the real-time data monitoring service
- */
 export function startRealTimeMonitoring() {
     realTimeService.startMonitoring();
 }
 
-/**
- * Stops the real-time data monitoring service
- */
 export function stopRealTimeMonitoring() {
     realTimeService.stopMonitoring();
 }
 
-/**
- * Subscribes to real-time data updates
- * @param {Function} callback - Function to call when new data is available
- * @returns {Function} Unsubscribe function
- */
 export function subscribeToRealTimeData(callback) {
     realTimeService.on('data', callback);
     return () => realTimeService.off('data', callback);
 }
 
-/**
- * Subscribes to error events
- * @param {Function} callback - Function to call when errors occur
- * @returns {Function} Unsubscribe function
- */
 export function subscribeToErrors(callback) {
     realTimeService.on('error', callback);
     return () => realTimeService.off('error', callback);

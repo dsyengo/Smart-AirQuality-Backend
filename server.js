@@ -5,15 +5,8 @@ import compression from 'compression';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
-import {
-    securityMiddleware,
-    apiLimiter,
-    corsOptions
-} from './config/security.js';
-import {
-    metricsMiddleware,
-    healthCheck
-} from './config/monitoring.js';
+import mongoose from 'mongoose';
+import { healthCheck } from './config/monitoring.js';
 import { setupGracefulShutdown } from './utils/gracefulShutdown.js';
 import { validateEnv } from './config/envValidation.js';
 import errorHandler from './middleware/errorHandler.js';
@@ -24,50 +17,42 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import { startRealTimeMonitoring } from './services/realTimeDataService.js';
 import { initRealtimeDataStream } from './controllers/dataMonitor.js';
+import { WebSocketServer } from 'ws';
 
-// Initialize environment
+
 dotenv.config();
 validateEnv();
 
-// Create Express app
 const app = express();
 const server = createServer(app);
 
-// Database connection  
-connectDatabase().then(() => {
-    // Start real-time monitoring after DB connects
-    startRealTimeMonitoring();
+const wss = new WebSocketServer({ server });
 
-    // Initialize WebSocket server
-    // initRealtimeDataStream(server);
+connectDatabase();
+startRealTimeMonitoring();
+initRealtimeDataStream(server);
 
-    // Middlewares
-    app.use(compression());
-    app.use(logger);
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-    app.use(cors(corsOptions));
-    app.use(morgan('combined'));
-    app.use(cookieParser());
-    // app.use(metricsMiddleware());
-    app.use(securityMiddleware);
+app.use(compression());
+app.use(logger);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use(morgan('combined'));
+app.use(cookieParser());
 
-    // Routes
-    app.use('/api/auth', authRoutes);
-    app.use('/api/users', userRoutes)
-    app.use('/api', apiLimiter, huaweiCloudRoutes);
-    app.get('/health', healthCheck);
-    app.use(errorHandler);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api', huaweiCloudRoutes);
+app.get('/health', healthCheck);
 
-    // Graceful shutdown
-    setupGracefulShutdown(server);
+app.use(errorHandler);
 
-    // Start server
-    app.listen(process.env.PORT, '0.0.0.0', () => {
-        console.log(`Server running on port ${process.env.PORT}`);
-        // console.log(`Real-time monitoring: ${realTimeDataService.isMonitoring ? 'ACTIVE' : 'INACTIVE'}`);
-    });
-}).catch(err => {
-    console.error('Database connection failed:', err);
-    process.exit(1);
+
+
+// Setup graceful shutdown
+setupGracefulShutdown(server, wss, mongoose);
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 });

@@ -21,6 +21,8 @@ export const getHuaweiCloudData = async (req, res, next) => {
     try {
         const data = await fetchLatestCloudData();
 
+        
+
         const allData = {
             Temperature: data.temperature,
             Humidity: data.humidity,

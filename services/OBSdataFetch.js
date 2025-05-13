@@ -1,10 +1,9 @@
-// Import required modules and load environment variables
 import ObsClient from 'esdk-obs-nodejs';
 import dotenv from 'dotenv';
 
 dotenv.config();
 const OBS_BUCKET = process.env.OBS_BUCKET;
-const FILE_KEY = 'sensor-data/data.json';
+const FILE_KEY = process.env.FILE_KEY;
 
 // Initialize Huawei OBS Client if not already initialized
 if (!global.obsClient) {
