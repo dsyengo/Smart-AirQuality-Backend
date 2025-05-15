@@ -21,11 +21,11 @@ export const processSensorData = (sensorData) => {
         pm10: rawData?.pms5003Dust || 0, // Assuming PM10 same as PM2.5 for now
         no2: rawData?.no2 || 30,
         so2: rawData?.so2 || 35,
-        co: rawData?.mq7CO || 0,
-        o3: rawData?.mq131Ozone || 0, // Use mq131Ozone for O3
+        co: rawData?.mq7CO || 6,
+        o3: rawData?.mq131Ozone || 10, // Use mq131Ozone for O3
     };
 
-    console.log('Data for processing:', rawData);
+    ;
     const AQILevels = calculateAQI(aqiParams);
 
     console.log('Calculated AQI:', AQILevels);
@@ -33,8 +33,8 @@ export const processSensorData = (sensorData) => {
         rawData,
         AQI: AQILevels,
         timestamp: rawData?.rtcTime || new Date().toISOString(),
-        temperature: rawData?.dht11Temperature || null,
-        humidity: rawData?.dht11Humidity || null,
+        temperature: rawData?.dht11Temperature || 30,
+        humidity: rawData?.dht11Humidity || 20,
     };
 };
 

@@ -21,10 +21,13 @@ export const initRealtimeDataStream = (server) => {
         console.log('WebSocket client connected');
 
         try {
+            let formattedData;
             const latestRawData = await realTimeDataService.fetchLatest();
+
             if (latestRawData && latestRawData.length > 0) {
+                // Use latest real-time data
                 const processed = processSensorData(latestRawData[latestRawData.length - 1]);
-                const formattedData = {
+                formattedData = {
                     timestamp: processed.timestamp,
                     aqi: processed.AQI?.overall || 0,
                     pollutants: {
@@ -38,6 +41,28 @@ export const initRealtimeDataStream = (server) => {
                     temperature: processed.temperature || null,
                     humidity: processed.humidity || null,
                 };
+            } else {
+                // Fallback to latest database data
+                const latestDBData = await OBSData.findOne().sort({ timestamp: -1 }).limit(1);
+                if (latestDBData) {
+                    formattedData = {
+                        timestamp: latestDBData.timestamp,
+                        aqi: latestDBData.AQI?.overall || 0,
+                        pollutants: {
+                            PM25: latestDBData.rawData?.pms5003Dust || 0,
+                            PM10: latestDBData.rawData?.pms5003Dust || 0,
+                            NO2: latestDBData.rawData?.no2 || 0,
+                            CO: latestDBData.rawData?.mq7CO || 0,
+                            SO2: latestDBData.rawData?.so2 || 0,
+                            O3: latestDBData.rawData?.mq131Ozone || 0,
+                        },
+                        temperature: latestDBData.temperature || null,
+                        humidity: latestDBData.humidity || null,
+                    };
+                }
+            }
+
+            if (formattedData) {
                 ws.send(JSON.stringify({
                     success: true,
                     message: 'Initial data',
@@ -46,7 +71,7 @@ export const initRealtimeDataStream = (server) => {
             } else {
                 ws.send(JSON.stringify({
                     success: false,
-                    message: 'No initial data available',
+                    message: 'No data available in real-time or database',
                 }));
             }
         } catch (err) {
