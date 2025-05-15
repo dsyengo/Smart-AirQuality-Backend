@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import { readFile } from 'fs/promises';
+
 
 // Initialize Firebase Admin SDK with service account
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);

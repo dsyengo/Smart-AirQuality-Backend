@@ -21,7 +21,7 @@ router.get('/simulate', getHuaweiCloudDataSim)
 
 //API Endpoint: GET /api/real-time-data
 //Returns real-time data from the OBS
-router.get('/real-time-data', getLatestData)
+router.get('/air-quality/current', getLatestData)
 
 
 
