@@ -6,6 +6,32 @@ import { processSensorData } from './dataMonitor.js';
 const activeConnections = new Set();
 
 export const initRealtimeDataStream = (server) => {
+    const stations = [
+        {
+            id: "1",
+            name: "Lavington Station (Huawei Offices)",
+            latitude: -1.2741,
+            longitude: 36.7615,
+            aqi: 45,
+            lastUpdated: new Date().toISOString(),
+        },
+        {
+            id: "2",
+            name: "Kilimani Station",
+            latitude: -1.2864,
+            longitude: 36.7889,
+            aqi: 52,
+            lastUpdated: new Date().toISOString(),
+        },
+        {
+            id: "3",
+            name: "Westlands Station",
+            latitude: -1.265,
+            longitude: 36.7962,
+            aqi: 68,
+            lastUpdated: new Date().toISOString(),
+        },
+    ];
     const wss = new WebSocketServer({ server });
 
     const broadcast = (data) => {
@@ -25,11 +51,10 @@ export const initRealtimeDataStream = (server) => {
             const latestRawData = await realTimeDataService.fetchLatest();
 
             if (latestRawData && latestRawData.length > 0) {
-                // Use latest real-time data
                 const processed = processSensorData(latestRawData[latestRawData.length - 1]);
                 formattedData = {
                     timestamp: processed.timestamp,
-                    aqi: processed.AQI?.overall || 0,
+                    aqi: processed.AQI || 0, // Use AQI directly
                     pollutants: {
                         PM25: processed.rawData?.pms5003Dust || 0,
                         PM10: processed.rawData?.pms5003Dust || 0,
@@ -42,22 +67,21 @@ export const initRealtimeDataStream = (server) => {
                     humidity: processed.humidity || null,
                 };
             } else {
-                // Fallback to latest database data
                 const latestDBData = await OBSData.findOne().sort({ timestamp: -1 }).limit(1);
                 if (latestDBData) {
                     formattedData = {
                         timestamp: latestDBData.timestamp,
-                        aqi: latestDBData.AQI?.overall || 0,
+                        aqi: latestDBData.AQI || 0, // Use AQI directly
                         pollutants: {
                             PM25: latestDBData.rawData?.pms5003Dust || 0,
                             PM10: latestDBData.rawData?.pms5003Dust || 0,
-                            NO2: latestDBData.rawData?.no2 || 0,
+                            NO2: latestDBData.rawData?.no2 || 30,
                             CO: latestDBData.rawData?.mq7CO || 0,
-                            SO2: latestDBData.rawData?.so2 || 0,
+                            SO2: latestDBData.rawData?.so2 || 20,
                             O3: latestDBData.rawData?.mq131Ozone || 0,
                         },
-                        temperature: latestDBData.temperature || null,
-                        humidity: latestDBData.humidity || null,
+                        temperature: latestDBData.rawData?.dht11Temperature || null,
+                        humidity: latestDBData.rawData?.dht11Humidity || null,
                     };
                 }
             }
@@ -96,20 +120,23 @@ export const initRealtimeDataStream = (server) => {
     realTimeDataService.on('data', async (newRawData) => {
         try {
             const processed = processSensorData(newRawData);
+
             const update = {
-                timestamp: processed.timestamp,
-                aqi: processed.AQI?.overall || 0,
+                stationId: nearestStation.id,
+                    timestamp: processed.timestamp,
+                aqi: processed.AQI || 0, // Use AQI directly
                 pollutants: {
                     PM25: processed.rawData?.pms5003Dust || 0,
                     PM10: processed.rawData?.pms5003Dust || 0,
-                    NO2: processed.rawData?.no2 || 0,
+                    NO2: processed.rawData?.no2 || 10, // Will use processSensorData default (30)
                     CO: processed.rawData?.mq7CO || 0,
-                    SO2: processed.rawData?.so2 || 0,
+                    SO2: processed.rawData?.so2 || 5, // Will use processSensorData default (35)
                     O3: processed.rawData?.mq131Ozone || 0,
                 },
                 temperature: processed.temperature || null,
                 humidity: processed.humidity || null,
             };
+            console.log("UPdate sent to UI:", update);
             await OBSData.create(processed); // Save to database
             broadcast({
                 success: true,

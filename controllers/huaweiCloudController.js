@@ -3,6 +3,7 @@ import { fetchLatestCloudData } from '../services/huaweiCloudService.js'
 import { processDataWithModel } from '../services/huaweiModelService.js';
 import { analyzeDataWithGemini } from '../services/geminiNLPService.js';
 import { getPredictionAnalysis } from '../services/huaweiPredictionModel.js';
+import { getEnvironmentalContextFromCoordinates } from '../services/generateEnvironmentalContext.js';
 import DataModel from '../models/data.js';
 import { calculateAQI } from '../utils/aqiCalculator.js';
 
@@ -19,9 +20,9 @@ import { calculateAQI } from '../utils/aqiCalculator.js';
  */
 export const getHuaweiCloudData = async (req, res, next) => {
     try {
-        const data = await fetchLatestCloudData();
-
         
+        const data = await fetchLatestCloudData();
+        getEnvironmentalContextFromCoordinates(data?.location?.lat, data?.location?.lng)
 
         const allData = {
             Temperature: data.temperature,
