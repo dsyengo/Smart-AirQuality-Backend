@@ -6,32 +6,7 @@ import { processSensorData } from './dataMonitor.js';
 const activeConnections = new Set();
 
 export const initRealtimeDataStream = (server) => {
-    const stations = [
-        {
-            id: "1",
-            name: "Lavington Station (Huawei Offices)",
-            latitude: -1.2741,
-            longitude: 36.7615,
-            aqi: 45,
-            lastUpdated: new Date().toISOString(),
-        },
-        {
-            id: "2",
-            name: "Kilimani Station",
-            latitude: -1.2864,
-            longitude: 36.7889,
-            aqi: 52,
-            lastUpdated: new Date().toISOString(),
-        },
-        {
-            id: "3",
-            name: "Westlands Station",
-            latitude: -1.265,
-            longitude: 36.7962,
-            aqi: 68,
-            lastUpdated: new Date().toISOString(),
-        },
-    ];
+
     const wss = new WebSocketServer({ server });
 
     const broadcast = (data) => {
@@ -122,8 +97,7 @@ export const initRealtimeDataStream = (server) => {
             const processed = processSensorData(newRawData);
 
             const update = {
-                stationId: nearestStation.id,
-                    timestamp: processed.timestamp,
+                timestamp: processed.timestamp,
                 aqi: processed.AQI || 0, // Use AQI directly
                 pollutants: {
                     PM25: processed.rawData?.pms5003Dust || 0,

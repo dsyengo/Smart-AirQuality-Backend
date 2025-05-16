@@ -1,7 +1,7 @@
-import { config } from "dotenv";
+import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-config();
+dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -14,7 +14,12 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
  * @param {Object} coordinates - Object with `lat` and `lng` properties.
  * @returns {Promise<{ Proximity_to_Industrial_Areas: number, Population_Density: number }>}
  */
-export async function getEnvironmentalContextFromCoordinates(coordinates) {
+
+export async function getEnvironmentalContextFromCoordinates() {
+    const coordinates = {
+        lat: -1.2806933977171824,
+        lng: 36.770635314136115
+    };
     const prompt = `
 You are an expert in geographic and environmental analysis. Based on a location's latitude and longitude, estimate the following:
 
@@ -47,3 +52,6 @@ Do not explain or elaborate — just return the JSON.
         throw new Error("Gemini response could not be parsed as JSON.");
     }
 }
+
+
+getEnvironmentalContextFromCoordinates()
