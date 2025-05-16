@@ -54,4 +54,4 @@ Do not explain or elaborate — just return the JSON.
 }
 
 
-getEnvironmentalContextFromCoordinates()
+
