@@ -22,7 +22,7 @@ if (!global.obsClient) {
 class RealTimeDataService extends EventEmitter {
     constructor() {
         super();
-        this.lastTimestamp = null; // Tracks the latest rtcTime processed
+        this.lastTimestamp = null; // Tracks the latest timestamp processed
         this.isMonitoring = false;
         this.pollingInterval = null;
         this.retryCount = 0;
@@ -31,19 +31,18 @@ class RealTimeDataService extends EventEmitter {
         this.maxConsecutiveErrors = 3;
     }
 
-    // Normalize rtcTime to valid ISO format (e.g., "2023-05-12 6:5:44" -> "2023-05-12T06:05:44")
-    normalizeRtcTime(rtcTime) {
-        if (!rtcTime) return null;
+    // Normalize timestamp to valid ISO format (e.g., "17/05/2025 15:09:54" -> "2025-05-17T15:09:54Z")
+    normalizeTimestamp(timestamp) {
+        if (!timestamp) return null;
         try {
-            const [date, time] = rtcTime.split(' ');
-            const [year, month, day] = date.split('-').map(Number);
-            let [hour, minute, second] = time.split(':').map(Number);
-            hour = hour.toString().padStart(2, '0');
-            minute = minute.toString().padStart(2, '0');
-            second = second.toString().padStart(2, '0');
-            return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hour}:${minute}:${second}`;
+            const [date, time] = timestamp.split(' ');
+            const [day, month, year] = date.split('/').map(Number);
+            const [hour, minute, second] = time.split(':').map(Number);
+            const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            const formattedTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:${second.toString().padStart(2, '0')}`;
+            return `${formattedDate}T${formattedTime}Z`;
         } catch (error) {
-            console.warn("[REALTIME] Failed to normalize rtcTime:", rtcTime, error.message);
+            console.warn("[REALTIME] Failed to normalize timestamp:", timestamp, error.message);
             return null;
         }
     }
@@ -125,7 +124,7 @@ class RealTimeDataService extends EventEmitter {
 
                 if (latestEntry) {
                     this.consecutiveErrors = 0;
-                    console.log("[REALTIME] Found latest entry with rtcTime:", latestEntry.rtcTime);
+                    console.log("[REALTIME] Found latest entry with timestamp:", latestEntry.timestamp);
                     return [latestEntry]; // Return as array for consistency
                 } else {
                     if (DEBUG_MODE) console.debug("[DEBUG] No valid entries found");
@@ -145,12 +144,12 @@ class RealTimeDataService extends EventEmitter {
         if (!dataArray || dataArray.length === 0) return null;
 
         let latestEntry = null;
-        let latestDate = this.lastTimestamp ? new Date(this.normalizeRtcTime(this.lastTimestamp)) : null;
+        let latestDate = this.lastTimestamp ? new Date(this.normalizeTimestamp(this.lastTimestamp)) : null;
 
         for (const entry of dataArray) {
-            if (!entry?.rtcTime) continue;
+            if (!entry?.timestamp) continue;
 
-            const normalizedTime = this.normalizeRtcTime(entry.rtcTime);
+            const normalizedTime = this.normalizeTimestamp(entry.timestamp);
             if (!normalizedTime) continue;
 
             try {
@@ -162,13 +161,13 @@ class RealTimeDataService extends EventEmitter {
                     latestDate = entryDate;
                 }
             } catch (dateError) {
-                console.warn("[REALTIME] Invalid rtcTime format:", entry.rtcTime);
+                console.warn("[REALTIME] Invalid timestamp format:", entry.timestamp);
                 continue;
             }
         }
 
-        if (latestEntry && (!this.lastTimestamp || new Date(this.normalizeRtcTime(latestEntry.rtcTime)) > new Date(this.normalizeRtcTime(this.lastTimestamp)))) {
-            this.lastTimestamp = latestEntry.rtcTime;
+        if (latestEntry && (!this.lastTimestamp || new Date(this.normalizeTimestamp(latestEntry.timestamp)) > new Date(this.normalizeTimestamp(this.lastTimestamp)))) {
+            this.lastTimestamp = latestEntry.timestamp;
             return latestEntry;
         }
 
@@ -288,7 +287,7 @@ class RealTimeDataService extends EventEmitter {
                 const latestEntry = this.findLatestEntry(dataArray);
 
                 if (latestEntry) {
-                    this.lastTimestamp = latestEntry.rtcTime;
+                    this.lastTimestamp = latestEntry.timestamp;
                     if (DEBUG_MODE) {
                         console.debug("[DEBUG] Initial fetch successful. Latest timestamp:", this.lastTimestamp);
                     }

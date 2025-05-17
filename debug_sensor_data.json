@@ -1,60 +1,6 @@
-{"pms5003Dust":70,"mq131Ozone":0.42,"dht11Temperature":24,"dht11Humidity":55,"gpsLatitude":40.7129,"gpsLongitude":-74.0054,"rtcTime":"2023-05-12 6:5:44","mq7CO":0.36,"alarmBuzzer":false}
-{"pms5003Dust":64,"mq131Ozone":0.03,"dht11Temperature":29,"dht11Humidity":57,"gpsLatitude":40.7132,"gpsLongitude":-74.0056,"rtcTime":"2023-05-12 0:17:55","mq7CO":0.48,"alarmBuzzer":true}
-{"pms5003Dust":27,"mq131Ozone":0.83,"dht11Temperature":21,"dht11Humidity":55,"gpsLatitude":40.713,"gpsLongitude":-74.0055,"rtcTime":"2023-05-12 13:43:37","mq7CO":0.17,"alarmBuzzer":true}
-{"pms5003Dust":80,"mq131Ozone":0.32,"dht11Temperature":27,"dht11Humidity":68,"gpsLatitude":40.7136,"gpsLongitude":-74.0058,"rtcTime":"2023-05-12 5:58:7","mq7CO":0.16,"alarmBuzzer":false}
-{"pms5003Dust":31,"mq131Ozone":0.08,"dht11Temperature":27,"dht11Humidity":69,"gpsLatitude":40.7128,"gpsLongitude":-74.0059,"rtcTime":"2023-05-12 1:23:53","mq7CO":0.4,"alarmBuzzer":true}
-{"pms5003Dust":70,"mq131Ozone":0.35,"dht11Temperature":27,"dht11Humidity":69,"gpsLatitude":40.7133,"gpsLongitude":-74.006,"rtcTime":"2023-05-12 0:59:49","mq7CO":0.22,"alarmBuzzer":true}
-{"pms5003Dust":87,"mq131Ozone":0.07,"dht11Temperature":26,"dht11Humidity":63,"gpsLatitude":40.7129,"gpsLongitude":-74.0059,"rtcTime":"2023-05-12 5:15:21","mq7CO":0.29,"alarmBuzzer":true}
-{"pms5003Dust":84,"mq131Ozone":0.18,"dht11Temperature":24,"dht11Humidity":62,"gpsLatitude":40.7132,"gpsLongitude":-74.0053,"rtcTime":"2023-05-12 1:48:41","mq7CO":0.12,"alarmBuzzer":false}
-{"pms5003Dust":48,"mq131Ozone":0.55,"dht11Temperature":23,"dht11Humidity":51,"gpsLatitude":40.7135,"gpsLongitude":-74.0057,"rtcTime":"2023-05-12 10:8:6","mq7CO":0.17,"alarmBuzzer":false}
-{"pms5003Dust":85,"mq131Ozone":0.71,"dht11Temperature":20,"dht11Humidity":67,"gpsLatitude":40.7137,"gpsLongitude":-74.0054,"rtcTime":"2023-05-12 15:46:16","mq7CO":0.38,"alarmBuzzer":true}
-{"pms5003Dust":66,"mq131Ozone":0.69,"dht11Temperature":29,"dht11Humidity":69,"gpsLatitude":40.7131,"gpsLongitude":-74.0058,"rtcTime":"2023-05-12 19:58:36","mq7CO":0.15,"alarmBuzzer":true}
-{"pms5003Dust":66,"mq131Ozone":0.92,"dht11Temperature":29,"dht11Humidity":52,"gpsLatitude":40.713,"gpsLongitude":-74.0057,"rtcTime":"2023-05-12 22:15:48","mq7CO":0.28,"alarmBuzzer":true}
-{"pms5003Dust":87,"mq131Ozone":0.22,"dht11Temperature":20,"dht11Humidity":59,"gpsLatitude":40.7129,"gpsLongitude":-74.0051,"rtcTime":"2023-05-12 22:35:20","mq7CO":0.2,"alarmBuzzer":false}
-{"pms5003Dust":60,"mq131Ozone":0.71,"dht11Temperature":20,"dht11Humidity":64,"gpsLatitude":40.7135,"gpsLongitude":-74.0056,"rtcTime":"2023-05-12 12:20:13","mq7CO":0.31,"alarmBuzzer":true}
-{"pms5003Dust":15,"mq131Ozone":0.3,"dht11Temperature":25,"dht11Humidity":68,"gpsLatitude":40.7136,"gpsLongitude":-74.0055,"rtcTime":"2023-05-12 17:16:20","mq7CO":0.14,"alarmBuzzer":true}
-{"pms5003Dust":19,"mq131Ozone":0.29,"dht11Temperature":27,"dht11Humidity":57,"gpsLatitude":40.7132,"gpsLongitude":-74.0053,"rtcTime":"2023-05-12 5:24:51","mq7CO":0.01,"alarmBuzzer":true}
-{"pms5003Dust":18,"mq131Ozone":0.09,"dht11Temperature":22,"dht11Humidity":55,"gpsLatitude":40.7132,"gpsLongitude":-74.006,"rtcTime":"2023-05-12 20:19:56","mq7CO":0.35,"alarmBuzzer":true}
-{"pms5003Dust":24,"mq131Ozone":0.86,"dht11Temperature":20,"dht11Humidity":56,"gpsLatitude":40.713,"gpsLongitude":-74.0052,"rtcTime":"2023-05-12 21:20:3","mq7CO":0.03,"alarmBuzzer":false}
-{"pms5003Dust":72,"mq131Ozone":0.37,"dht11Temperature":26,"dht11Humidity":65,"gpsLatitude":40.7135,"gpsLongitude":-74.0058,"rtcTime":"2023-05-12 11:45:29","mq7CO":0.35,"alarmBuzzer":false}
-{"pms5003Dust":44,"mq131Ozone":0.83,"dht11Temperature":29,"dht11Humidity":65,"gpsLatitude":40.713,"gpsLongitude":-74.0057,"rtcTime":"2023-05-12 7:15:58","mq7CO":0.35,"alarmBuzzer":false}
-{"pms5003Dust":38,"mq131Ozone":0.55,"dht11Temperature":26,"dht11Humidity":62,"gpsLatitude":40.7131,"gpsLongitude":-74.0056,"rtcTime":"2023-05-12 14:59:1","mq7CO":0.08,"alarmBuzzer":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":1.376344086,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":52,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.418377322,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":51,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.323558162,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":50,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.26686217,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":50,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.227761486,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":50,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":27.2,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.146627566,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.140762463,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.122189638,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.109481916,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.095796676,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.079178886,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.078201369,"co_ppm":0,"temp_celsius":28,"humidity_percent":48,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.06744868,"co_ppm":0,"temp_celsius":28,"humidity_percent":48,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.059628543,"co_ppm":0,"temp_celsius":28,"humidity_percent":48,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.05083089,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.046920821,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.04398827,"co_ppm":0,"temp_celsius":28.4,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.036168133,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.033235582,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.031280547,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.029325513,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.021505376,"co_ppm":0,"temp_celsius":28.9,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.021505376,"co_ppm":0,"temp_celsius":28.9,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.015640274,"co_ppm":0,"temp_celsius":28.9,"humidity_percent":46,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.015640274,"co_ppm":0,"temp_celsius":28.9,"humidity_percent":46,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.012707722,"co_ppm":0,"temp_celsius":28.9,"humidity_percent":46,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.008797654,"co_ppm":0,"temp_celsius":29,"humidity_percent":46,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.004887586,"co_ppm":0,"temp_celsius":29.3,"humidity_percent":46,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.001955034,"co_ppm":0,"temp_celsius":29.3,"humidity_percent":46,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"timestamp":"17/05/2025 14:11:38","pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"timestamp":"17/05/2025 14:12:02","pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"timestamp":"17/05/2025 14:12:27","pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"timestamp":"17/05/2025 14:12:51","pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"timestamp":"17/05/2025 14:13:16","pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"timestamp":"01/01/2000 00:00:11","pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"timestamp":"01/01/2000 00:00:36","pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"timestamp":"01/01/2000 00:00:56","pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":28.1,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
-{"timestamp":"01/01/2000 00:01:22","pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"timestamp":"17/05/2025 15:54:57","pm1_0_ppm":6,"pm2_5_ppm":6,"pm10_ppm":6,"ozone_ppm":0,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"timestamp":"17/05/2025 15:55:19","pm1_0_ppm":9,"pm2_5_ppm":11,"pm10_ppm":11,"ozone_ppm":0,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"timestamp":"17/05/2025 15:55:41","pm1_0_ppm":12,"pm2_5_ppm":14,"pm10_ppm":17,"ozone_ppm":0,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"timestamp":"17/05/2025 15:56:03","pm1_0_ppm":12,"pm2_5_ppm":13,"pm10_ppm":16,"ozone_ppm":0,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"timestamp":"17/05/2025 15:56:25","pm1_0_ppm":11,"pm2_5_ppm":13,"pm10_ppm":17,"ozone_ppm":0,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"timestamp":"17/05/2025 15:56:48","pm1_0_ppm":11,"pm2_5_ppm":14,"pm10_ppm":17,"ozone_ppm":0,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}

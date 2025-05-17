@@ -17,12 +17,11 @@ export const processSensorData = (sensorData) => {
 
     const rawData = Array.isArray(sensorData) ? sensorData[0] : sensorData;
     const aqiParams = {
-        pm25: rawData?.pms5003Dust || 0,
-        pm10: rawData?.pms5003Dust || 0, // Assuming PM10 same as PM2.5 for now
-        no2: rawData?.no2 || 30,
-        so2: rawData?.so2 || 35,
-        co: rawData?.mq7CO || 6,
-        o3: rawData?.mq131Ozone || 10, // Use mq131Ozone for O3
+        pm10: rawData?.pm1_0_ppm,
+        pm25: rawData?.pm2_5_ppm,
+        pm10: rawData?.pm10_ppm, // Assuming PM10 same as PM2.5 for now
+        co: rawData?.co_ppm,
+        o3: rawData?.ozone_ppm,
     };
 
     ;
@@ -32,9 +31,9 @@ export const processSensorData = (sensorData) => {
     return {
         rawData,
         AQI: AQILevels,
-        timestamp: rawData?.rtcTime || new Date().toISOString(),
-        temperature: rawData?.dht11Temperature || 30,
-        humidity: rawData?.dht11Humidity || 20,
+        timestamp: rawData?.timestamp || new Date().toISOString(),
+        temperature: rawData?.temp_celsius,
+        humidity: rawData?.humidity_percent,
     };
 };
 
