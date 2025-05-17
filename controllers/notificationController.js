@@ -11,7 +11,7 @@ export const saveFcmToken = async (req, res) => {
         }
 
         const user = await userModel.findByIdAndUpdate(
-            req.user.id,
+            req.user,
             { fcmToken },
             { new: true }
         );
