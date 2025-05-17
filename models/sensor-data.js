@@ -1,24 +1,17 @@
+// models/sensor-data.js
 import mongoose from 'mongoose';
 
-const SensorData = new mongoose.Schema({
-    rawData: {
-        type: mongoose.Schema.Types.Mixed, // Stores the raw NDJSON entry (e.g., { pms5003Dust, mq131Ozone, ... })
-        required: true,
+const sensorDataSchema = new mongoose.Schema({
+    rawData: { type: Object, required: true },
+    AQI: { type: Number, required: true },
+    timestamp: { type: Date, required: true },
+    temperature: { type: Number, required: true },
+    humidity: { type: Number, required: true },
+    gps: {
+        latitude: { type: Number, default: 0 },
+        longitude: { type: Number, default: 0 }
     },
-    AQI: {
-        type: Number, // Stores the calculated AQI value
-        required: true,
-    },
-    timestamp: {
-        type: String, // Stores the sensor's rtcTime (e.g., "2023-05-12 6:5:44")
-        required: true,
-    },
-    fetchedAt: {
-        type: Date, // Stores when the data was saved to the database
-        default: Date.now,
-    },
+    buzzer_o: { type: Boolean, default: false }
 });
 
-const OBSData = mongoose.model('OBS-data', SensorData);
-
-export default OBSData;
+export default mongoose.model('OBSData', sensorDataSchema);

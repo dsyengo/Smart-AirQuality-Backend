@@ -3,9 +3,10 @@ import { calculateAQI } from './aqiCalculator.js';
 
 export const processSensorData = (sensorData) => {
     const rawData = Array.isArray(sensorData) ? sensorData[0] : sensorData;
+    
 
     const aqiParams = {
-        pm10: rawData?.pm1_0_ppm || 0,
+        pm1: rawData?.pm1_0_ppm || 0,
         pm25: rawData?.pm2_5_ppm || 0,
         pm10: rawData?.pm10_ppm || 0,
         o3: rawData?.ozone_ppm || 0,
@@ -27,11 +28,11 @@ export const processSensorData = (sensorData) => {
         rawData,
         AQI: AQILevel,
         timestamp,
-        temperature: rawData?.temp_celsius || 30,
-        humidity: rawData?.humidity_percent || 20,
+        temperature: rawData?.temp_celsius,
+        humidity: rawData?.humidity_percent,
         gps: {
-            latitude: rawData?.gps_lat || 0,
-            longitude: rawData?.gps_lng || 0
+            latitude: rawData?.gps_lat,
+            longitude: rawData?.gps_lng
         },
         buzzer: rawData?.buzzer_on || false
     };

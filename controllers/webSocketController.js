@@ -34,7 +34,7 @@ export const initRealtimeDataStream = (server) => {
                 try {
                     const processed = processSensorData(latestRawData[0]);
                     formattedData = {
-                        timestamp: processed.timestamp,
+                        timestamp: processed.timestamp.toISOString(),
                         aqi: processed.AQI || 0,
                         pollutants: {
                             PM1_0: processed.rawData?.pm1_0_ppm || 0,
@@ -48,6 +48,7 @@ export const initRealtimeDataStream = (server) => {
                         gps: processed.gps || { latitude: processed.rawData?.gps_lat || 0, longitude: processed.rawData?.gps_lng || 0 },
                         buzzer: processed.buzzer_o || false
                     };
+                    console.log('[WEBSOCKET] Real-time data processed:', formattedData);
                 } catch (processError) {
                     console.error('[WEBSOCKET] Error processing real-time data:', processError.message);
                 }
@@ -60,7 +61,7 @@ export const initRealtimeDataStream = (server) => {
                     try {
                         const processed = processSensorData(latestDBData.toObject());
                         formattedData = {
-                            timestamp: processed.timestamp,
+                            timestamp: processed.timestamp.toISOString(),
                             aqi: processed.AQI || 0,
                             pollutants: {
                                 PM1_0: processed.rawData?.pm1_0_ppm || 0,
@@ -129,6 +130,8 @@ export const initRealtimeDataStream = (server) => {
                 buzzer: processed.buzzer_o || false
             };
 
+            
+
             // Broadcast first
             broadcast({
                 success: true,
@@ -138,8 +141,12 @@ export const initRealtimeDataStream = (server) => {
             console.log('[WEBSOCKET] Broadcasted AQI:', update.aqi);
 
             // Save to database
-            await OBSData.create(processed);
-            console.log('[DATABASE] Saved AQI:', processed.AQI);
+            try {
+                await OBSData.create(processed);
+                console.log('[DATABASE] Saved AQI:', processed.AQI);
+            } catch (dbError) {
+                console.error('[DATABASE] Save error:', dbError.message);
+            }
         } catch (err) {
             console.error('[WEBSOCKET] Data processing error:', err.message);
             broadcast({
