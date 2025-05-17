@@ -12,7 +12,11 @@ export const initRealtimeDataStream = (server) => {
     const broadcast = (data) => {
         for (const client of activeConnections) {
             if (client.readyState === client.OPEN) {
-                client.send(JSON.stringify(data));
+                try {
+                    client.send(JSON.stringify(data));
+                } catch (err) {
+                    console.error('[WEBSOCKET] Broadcast error:', err.message);
+                }
             }
         }
     };
@@ -22,52 +26,64 @@ export const initRealtimeDataStream = (server) => {
         console.log('[WEBSOCKET] Client connected');
 
         try {
-            // Send initial data
-            const latestRawData = await realTimeDataService.fetchLatest();
-            let formattedData;
+            let formattedData = null;
 
+            // Try real-time data first
+            const latestRawData = await realTimeDataService.fetchLatest();
             if (latestRawData && latestRawData.length > 0) {
-                const processed = processSensorData(latestRawData[0]);
-                formattedData = {
-                    timestamp: processed.timestamp,
-                    aqi: processed.AQI || 0,
-                    pollutants: {
-                        PM10: processed.rawData?.pm1_0_ppm || 0,
-                        PM25: processed.rawData?.pm2_5_ppm || 0,
-                        PM10: processed.rawData?.pm10_ppm || 0,
-                        O3: processed.rawData?.ozone_ppm || 0,
-                        CO: processed.rawData?.co_ppm || 0
-                    },
-                    temperature: processed.temp_celsius || null,
-                    humidity: processed.humidity_percent || null,
-                    gps: processed.gps || { latitude: gps_lat, longitude: gps_lng },
-                    buzzer: processed.buzzer_o || false
-                };
-            } else {
-                const latestDBData = await OBSData.findOne().sort({ timestamp: -1 }).limit(1);
-                if (latestDBData) {
+                try {
+                    const processed = processSensorData(latestRawData[0]);
                     formattedData = {
-                        timestamp: latestDBData.timestamp,
-                        aqi: latestDBData.AQI || 0,
+                        timestamp: processed.timestamp,
+                        aqi: processed.AQI || 0,
                         pollutants: {
-                            PM10: latestDBData.rawData?.pm1_0_ppm || 0,
-                            PM25: latestDBData.rawData?.pm2_5_ppm || 0,
-                            PM10: latestDBData.rawData?.pm10_ppm || 0,
-                            O3: latestDBData.rawData?.ozone_ppm || 0,
-                            CO: latestDBData.rawData?.co_ppm || 0
+                            PM1_0: processed.rawData?.pm1_0_ppm || 0,
+                            PM2_5: processed.rawData?.pm2_5_ppm || 0,
+                            PM10: processed.rawData?.pm10_ppm || 0,
+                            O3: processed.rawData?.ozone_ppm || 0,
+                            CO: processed.rawData?.co_ppm || 0
                         },
                         temperature: processed.temp_celsius || null,
                         humidity: processed.humidity_percent || null,
-                        gps: processed.gps || { latitude: gps_lat, longitude: gps_lng },
+                        gps: processed.gps || { latitude: processed.rawData?.gps_lat || 0, longitude: processed.rawData?.gps_lng || 0 },
                         buzzer: processed.buzzer_o || false
                     };
+                } catch (processError) {
+                    console.error('[WEBSOCKET] Error processing real-time data:', processError.message);
+                }
+            }
+
+            // Fallback to database
+            if (!formattedData) {
+                const latestDBData = await OBSData.findOne().sort({ timestamp: -1 }).limit(1);
+                if (latestDBData) {
+                    try {
+                        const processed = processSensorData(latestDBData.toObject());
+                        formattedData = {
+                            timestamp: processed.timestamp,
+                            aqi: processed.AQI || 0,
+                            pollutants: {
+                                PM1_0: processed.rawData?.pm1_0_ppm || 0,
+                                PM2_5: processed.rawData?.pm2_5_ppm || 0,
+                                PM10: processed.rawData?.pm10_ppm || 0,
+                                O3: processed.rawData?.ozone_ppm || 0,
+                                CO: processed.rawData?.co_ppm || 0
+                            },
+                            temperature: processed.temp_celsius || null,
+                            humidity: processed.humidity_percent || null,
+                            gps: processed.gps || { latitude: processed.rawData?.gps_lat || 0, longitude: processed.rawData?.gps_lng || 0 },
+                            buzzer: processed.buzzer_o || false
+                        };
+                    } catch (processError) {
+                        console.error('[WEBSOCKET] Error processing database data:', processError.message);
+                    }
                 }
             }
 
             ws.send(JSON.stringify({
-                success: true,
-                message: 'Initial data',
-                data: formattedData || { message: 'No data available' }
+                success: !!formattedData,
+                message: formattedData ? 'Initial data' : 'No data available',
+                data: formattedData || {}
             }));
         } catch (err) {
             console.error('[WEBSOCKET] Initial data error:', err.message);
@@ -88,29 +104,32 @@ export const initRealtimeDataStream = (server) => {
         });
     });
 
-    // Subscribe to real-time data
+    // Handle real-time updates
     subscribeToRealTimeData(async (newRawData) => {
         try {
-            if (!newRawData || !newRawData.length) return;
+            if (!newRawData || !newRawData.length) {
+                console.warn('[WEBSOCKET] No new data received');
+                return;
+            }
 
             const processed = processSensorData(newRawData[0]);
             const update = {
                 timestamp: processed.timestamp,
                 aqi: processed.AQI || 0,
                 pollutants: {
-                    PM10: processed.rawData?.pm1_0_ppm || 0,
-                    PM25: processed.rawData?.pm2_5_ppm || 0,
+                    PM1_0: processed.rawData?.pm1_0_ppm || 0,
+                    PM2_5: processed.rawData?.pm2_5_ppm || 0,
                     PM10: processed.rawData?.pm10_ppm || 0,
                     O3: processed.rawData?.ozone_ppm || 0,
                     CO: processed.rawData?.co_ppm || 0
                 },
                 temperature: processed.temp_celsius || null,
                 humidity: processed.humidity_percent || null,
-                gps: processed.gps || { latitude: gps_lat, longitude: gps_lng },
+                gps: processed.gps || { latitude: processed.rawData?.gps_lat || 0, longitude: processed.rawData?.gps_lng || 0 },
                 buzzer: processed.buzzer_o || false
             };
 
-            // Broadcast to clients
+            // Broadcast first
             broadcast({
                 success: true,
                 message: 'Real-time update',
