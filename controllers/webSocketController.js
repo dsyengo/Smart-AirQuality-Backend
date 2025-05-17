@@ -43,8 +43,8 @@ export const initRealtimeDataStream = (server) => {
                             O3: processed.rawData?.ozone_ppm || 0,
                             CO: processed.rawData?.co_ppm || 0
                         },
-                        temperature: processed.temp_celsius || null,
-                        humidity: processed.humidity_percent || null,
+                        temperature: processed.temperature || null,
+                        humidity: processed.humidity || null,
                         gps: processed.gps || { latitude: processed.rawData?.gps_lat || 0, longitude: processed.rawData?.gps_lng || 0 },
                         buzzer: processed.buzzer_o || false
                     };
@@ -70,8 +70,8 @@ export const initRealtimeDataStream = (server) => {
                                 O3: processed.rawData?.ozone_ppm || 0,
                                 CO: processed.rawData?.co_ppm || 0
                             },
-                            temperature: processed.temp_celsius || null,
-                            humidity: processed.humidity_percent || null,
+                            temperature: processed.temperature || null,
+                            humidity: processed.humidity || null,
                             gps: processed.gps || { latitude: processed.rawData?.gps_lat || 0, longitude: processed.rawData?.gps_lng || 0 },
                             buzzer: processed.buzzer_o || false
                         };
@@ -124,8 +124,8 @@ export const initRealtimeDataStream = (server) => {
                     O3: processed.rawData?.ozone_ppm || 0,
                     CO: processed.rawData?.co_ppm || 0
                 },
-                temperature: processed.temp_celsius || null,
-                humidity: processed.humidity_percent || null,
+                temperature: processed.temperature || null,
+                humidity: processed.humidity || null,
                 gps: processed.gps || { latitude: processed.rawData?.gps_lat || 0, longitude: processed.rawData?.gps_lng || 0 },
                 buzzer: processed.buzzer_o || false
             };
