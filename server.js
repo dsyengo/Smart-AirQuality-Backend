@@ -43,7 +43,7 @@ app.use('/api/users', userRoutes);
 app.use('/api', huaweiCloudRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/air-quality', historicalDataRoutes);
-app.use('/api/notifications', notificationRoutes);
+app.use('/api/', notificationRoutes);
 app.get('/health', healthCheck);
 
 
