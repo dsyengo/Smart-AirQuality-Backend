@@ -10,7 +10,7 @@ export const saveFcmToken = async (req, res) => {
             return res.status(400).json({ message: 'FCM token is required' });
         }
 
-        const user = await UserModel.findByIdAndUpdate(
+        const user = await userModel.findByIdAndUpdate(
             req.user.id,
             { fcmToken },
             { new: true }
@@ -35,7 +35,7 @@ export const sendAirQualityAlert = async (req, res) => {
             return res.status(400).json({ message: 'userId, iotData, and riskLevel are required' });
         }
 
-        const user = await User.findById(userId);
+        const user = await userModel.findById(userId);
         if (!user || !user.fcmToken) {
             return res.status(404).json({ message: 'User or FCM token not found' });
         }
