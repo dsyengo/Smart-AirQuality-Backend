@@ -19,7 +19,7 @@ import { startRealTimeMonitoring } from './services/realTimeDataService.js';
 import { initRealtimeDataStream } from './controllers/webSocketController.js';
 import recommendationRoutes from './routes/recommendationRoutes.js'
 import historicalDataRoutes from './routes/dataHistoryRoute.js'
-
+import notificationRoutes from './routes/notificationRoutes.js';
 dotenv.config();
 validateEnv();
 
@@ -43,6 +43,7 @@ app.use('/api/users', userRoutes);
 app.use('/api', huaweiCloudRoutes);
 app.use('/api/health', recommendationRoutes);
 app.use('/api/air-quality', historicalDataRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.get('/health', healthCheck);
 
 

@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
                 return !!this.profile?.ageRange && !!this.profile?.location;
             }
         }
-    }
+    },
+    fcmToken: String,
 }, { timestamps: true });
 
 const userModel = mongoose.models.users || mongoose.model('users', userSchema);

@@ -1,6 +1,5 @@
 import admin from 'firebase-admin';
 
-
 // Initialize Firebase Admin SDK with service account
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
 
@@ -15,12 +14,6 @@ export class NotificationService {
         this.messaging = admin.messaging();
     }
 
-    /**
-     * Send personalized notification to a specific device
-     * @param {string} fcmToken - The device's FCM token
-     * @param {object} payload - Notification payload
-     * @returns {Promise<string>} - Message ID
-     */
     async sendNotification(fcmToken, payload) {
         try {
             const message = {
@@ -51,13 +44,6 @@ export class NotificationService {
         }
     }
 
-    /**
-     * Generate air quality alert notification
-     * @param {object} user - User profile data
-     * @param {object} iotData - IoT sensor data
-     * @param {string} riskLevel - Calculated risk level
-     * @returns {object} Formatted notification payload
-     */
     createAirQualityAlert(user, iotData, riskLevel) {
         const title = `Air Quality ${riskLevel.toUpperCase()} Alert`;
         const body = this.generateAlertBody(user, iotData, riskLevel);
