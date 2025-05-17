@@ -1,5 +1,6 @@
 import { NotificationService } from '../services/notificationService.js';
 import userModel from '../models/userModel.js';
+import mongoose from 'mongoose';
 
 const notificationService = new NotificationService();
 
@@ -10,8 +11,14 @@ export const saveFcmToken = async (req, res) => {
             return res.status(400).json({ message: 'FCM token is required' });
         }
 
+        // Extract userId from req.user
+        const userId = req.user?.userId || req.user;
+        if (!userId || !mongoose.isValidObjectId(userId)) {
+            return res.status(400).json({ message: 'Invalid user ID' });
+        }
+
         const user = await userModel.findByIdAndUpdate(
-            req.user,
+            userId,
             { fcmToken },
             { new: true }
         );
@@ -33,6 +40,10 @@ export const sendAirQualityAlert = async (req, res) => {
 
         if (!userId || !iotData || !riskLevel) {
             return res.status(400).json({ message: 'userId, iotData, and riskLevel are required' });
+        }
+
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).json({ message: 'Invalid user ID' });
         }
 
         const user = await userModel.findById(userId);

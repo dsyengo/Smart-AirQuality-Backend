@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
         ageRange: { type: String, enum: ['Under 18', '18-30', '31-45', '46-60', 'Over 60'], default: null },
         location: { type: String, default: null },
         hasRespiratoryIssues: { type: Boolean, default: false },
-        healthConditions: { type: String, default: null },
+        healthConditions: { type: [String], default: [] }, // Changed to array
         isProfileComplete: {
             type: Boolean,
             default: function () {
