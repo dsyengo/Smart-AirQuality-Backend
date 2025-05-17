@@ -20,3 +20,27 @@
 {"pms5003Dust":44,"mq131Ozone":0.83,"dht11Temperature":29,"dht11Humidity":65,"gpsLatitude":40.713,"gpsLongitude":-74.0057,"rtcTime":"2023-05-12 7:15:58","mq7CO":0.35,"alarmBuzzer":false}
 {"pms5003Dust":38,"mq131Ozone":0.55,"dht11Temperature":26,"dht11Humidity":62,"gpsLatitude":40.7131,"gpsLongitude":-74.0056,"rtcTime":"2023-05-12 14:59:1","mq7CO":0.08,"alarmBuzzer":false}
 {"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":1.376344086,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":52,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.418377322,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":51,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.323558162,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":50,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.26686217,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":50,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.227761486,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":50,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0,"co_ppm":0,"temp_celsius":27.2,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.146627566,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.140762463,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.122189638,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.109481916,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.095796676,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.079178886,"co_ppm":0,"temp_celsius":27.6,"humidity_percent":49,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.078201369,"co_ppm":0,"temp_celsius":28,"humidity_percent":48,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.06744868,"co_ppm":0,"temp_celsius":28,"humidity_percent":48,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.059628543,"co_ppm":0,"temp_celsius":28,"humidity_percent":48,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.05083089,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.046920821,"co_ppm":0,"temp_celsius":28,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.04398827,"co_ppm":0,"temp_celsius":28.4,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.036168133,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.033235582,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.031280547,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.029325513,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.021505376,"co_ppm":0,"temp_celsius":28.9,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.021505376,"co_ppm":0,"temp_celsius":28.9,"humidity_percent":47,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.015640274,"co_ppm":0,"temp_celsius":28.9,"humidity_percent":46,"gps_lat":0,"gps_lng":0,"buzzer_on":false}

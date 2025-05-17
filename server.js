@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', huaweiCloudRoutes);
-app.use('/api/health', recommendationRoutes);
+app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/air-quality', historicalDataRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.get('/health', healthCheck);

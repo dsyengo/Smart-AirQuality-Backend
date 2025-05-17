@@ -20,3 +20,7 @@
 {"pms5003Dust":44,"mq131Ozone":0.83,"dht11Temperature":29,"dht11Humidity":65,"gpsLatitude":40.713,"gpsLongitude":-74.0057,"rtcTime":"2023-05-12 7:15:58","mq7CO":0.35,"alarmBuzzer":false}
 {"pms5003Dust":38,"mq131Ozone":0.55,"dht11Temperature":26,"dht11Humidity":62,"gpsLatitude":40.7131,"gpsLongitude":-74.0056,"rtcTime":"2023-05-12 14:59:1","mq7CO":0.08,"alarmBuzzer":false}
 {"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":1.376344086,"co_ppm":0,"temp_celsius":28.5,"humidity_percent":52,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.418377322,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":51,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.323558162,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":50,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.26686217,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":50,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
+{"pm1_0_ppm":0,"pm2_5_ppm":0,"pm10_ppm":0,"ozone_ppm":0.227761486,"co_ppm":0,"temp_celsius":27.1,"humidity_percent":50,"gps_lat":0,"gps_lng":0,"buzzer_on":false}
