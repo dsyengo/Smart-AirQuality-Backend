@@ -1,3 +1,4 @@
+// services/realTimeDataService.js
 import { EventEmitter } from 'events';
 import ObsClient from 'esdk-obs-nodejs';
 import dotenv from 'dotenv';
@@ -22,7 +23,7 @@ if (!global.obsClient) {
 class RealTimeDataService extends EventEmitter {
     constructor() {
         super();
-        this.lastTimestamp = null; // Tracks the latest timestamp processed
+        this.lastTimestamp = null;
         this.isMonitoring = false;
         this.pollingInterval = null;
         this.retryCount = 0;
@@ -31,7 +32,6 @@ class RealTimeDataService extends EventEmitter {
         this.maxConsecutiveErrors = 3;
     }
 
-    // Normalize timestamp to valid ISO format (e.g., "17/05/2025 15:09:54" -> "2025-05-17T15:09:54Z")
     normalizeTimestamp(timestamp) {
         if (!timestamp) return null;
         try {
@@ -90,7 +90,6 @@ class RealTimeDataService extends EventEmitter {
                 }
 
                 try {
-                    // Parse NDJSON directly
                     dataArray = rawContent
                         .split('\n')
                         .filter(line => line.trim())
@@ -125,7 +124,7 @@ class RealTimeDataService extends EventEmitter {
                 if (latestEntry) {
                     this.consecutiveErrors = 0;
                     console.log("[REALTIME] Found latest entry with timestamp:", latestEntry.timestamp);
-                    return [latestEntry]; // Return as array for consistency
+                    return [latestEntry];
                 } else {
                     if (DEBUG_MODE) console.debug("[DEBUG] No valid entries found");
                     return null;

@@ -1,12 +1,12 @@
+// controllers/webSocketController.js
 import { WebSocketServer } from 'ws';
-import { realTimeDataService } from '../services/realTimeDataService.js';
+import { realTimeDataService, subscribeToRealTimeData } from '../services/realTimeDataService.js';
+import { processSensorData } from '../utils/dataProcessor.js';
 import OBSData from '../models/sensor-data.js';
-import { processSensorData } from './dataMonitor.js';
 
 const activeConnections = new Set();
 
 export const initRealtimeDataStream = (server) => {
-
     const wss = new WebSocketServer({ server });
 
     const broadcast = (data) => {
@@ -19,116 +19,120 @@ export const initRealtimeDataStream = (server) => {
 
     wss.on('connection', async (ws) => {
         activeConnections.add(ws);
-        console.log('WebSocket client connected');
+        console.log('[WEBSOCKET] Client connected');
 
         try {
-            let formattedData;
+            // Send initial data
             const latestRawData = await realTimeDataService.fetchLatest();
+            let formattedData;
 
             if (latestRawData && latestRawData.length > 0) {
-                const processed = processSensorData(latestRawData[latestRawData.length - 1]);
+                const processed = processSensorData(latestRawData[0]);
                 formattedData = {
                     timestamp: processed.timestamp,
-                    aqi: processed.AQI || 0, // Use AQI directly
+                    aqi: processed.AQI || 0,
                     pollutants: {
-                        PM25: processed.rawData?.pms5003Dust || 0,
-                        PM10: processed.rawData?.pms5003Dust || 0,
-                        NO2: processed.rawData?.no2 || 0,
-                        CO: processed.rawData?.mq7CO || 0,
-                        SO2: processed.rawData?.so2 || 0,
-                        O3: processed.rawData?.mq131Ozone || 0,
+                        PM10: processed.rawData?.pm1_0_ppm || 0,
+                        PM25: processed.rawData?.pm2_5_ppm || 0,
+                        PM10: processed.rawData?.pm10_ppm || 0,
+                        O3: processed.rawData?.ozone_ppm || 0,
+                        CO: processed.rawData?.co_ppm || 0
                     },
                     temperature: processed.temperature || null,
                     humidity: processed.humidity || null,
+                    gps: processed.gps || { latitude: 0, longitude: 0 },
+                    buzzer: processed.buzzer || false
                 };
             } else {
                 const latestDBData = await OBSData.findOne().sort({ timestamp: -1 }).limit(1);
                 if (latestDBData) {
                     formattedData = {
                         timestamp: latestDBData.timestamp,
-                        aqi: latestDBData.AQI || 0, // Use AQI directly
+                        aqi: latestDBData.AQI || 0,
                         pollutants: {
-                            PM25: latestDBData.rawData?.pms5003Dust || 0,
-                            PM10: latestDBData.rawData?.pms5003Dust || 0,
-                            NO2: latestDBData.rawData?.no2 || 30,
-                            CO: latestDBData.rawData?.mq7CO || 0,
-                            SO2: latestDBData.rawData?.so2 || 20,
-                            O3: latestDBData.rawData?.mq131Ozone || 0,
+                            PM10: latestDBData.rawData?.pm1_0_ppm || 0,
+                            PM25: latestDBData.rawData?.pm2_5_ppm || 0,
+                            PM10: latestDBData.rawData?.pm10_ppm || 0,
+                            O3: latestDBData.rawData?.ozone_ppm || 0,
+                            CO: latestDBData.rawData?.co_ppm || 0
                         },
-                        temperature: latestDBData.rawData?.dht11Temperature || null,
-                        humidity: latestDBData.rawData?.dht11Humidity || null,
+                        temperature: processed.temp_celsius || null,
+                        humidity: processed.humidity_percent || null,
+                        gps: processed.gps || { latitude: gps_lat, longitude: gps_lng },
+                        buzzer: processed.buzzer_o || false
                     };
                 }
             }
 
-            if (formattedData) {
-                ws.send(JSON.stringify({
-                    success: true,
-                    message: 'Initial data',
-                    data: formattedData,
-                }));
-            } else {
-                ws.send(JSON.stringify({
-                    success: false,
-                    message: 'No data available in real-time or database',
-                }));
-            }
+            ws.send(JSON.stringify({
+                success: true,
+                message: 'Initial data',
+                data: formattedData || { message: 'No data available' }
+            }));
         } catch (err) {
-            console.error('Initial data error:', err);
+            console.error('[WEBSOCKET] Initial data error:', err.message);
             ws.send(JSON.stringify({
                 success: false,
-                message: 'Error fetching initial data',
+                message: 'Error fetching initial data'
             }));
         }
 
         ws.on('close', () => {
             activeConnections.delete(ws);
-            console.log('WebSocket client disconnected');
+            console.log('[WEBSOCKET] Client disconnected');
         });
 
         ws.on('error', (err) => {
-            console.error('WebSocket error:', err);
+            console.error('[WEBSOCKET] Error:', err.message);
             activeConnections.delete(ws);
         });
     });
 
-    realTimeDataService.on('data', async (newRawData) => {
+    // Subscribe to real-time data
+    subscribeToRealTimeData(async (newRawData) => {
         try {
-            const processed = processSensorData(newRawData);
+            if (!newRawData || !newRawData.length) return;
 
+            const processed = processSensorData(newRawData[0]);
             const update = {
                 timestamp: processed.timestamp,
-                aqi: processed.AQI || 0, // Use AQI directly
+                aqi: processed.AQI || 0,
                 pollutants: {
-                    PM25: processed.rawData?.pms5003Dust || 0,
-                    PM10: processed.rawData?.pms5003Dust || 0,
-                    NO2: processed.rawData?.no2 || 10, // Will use processSensorData default (30)
-                    CO: processed.rawData?.mq7CO || 0,
-                    SO2: processed.rawData?.so2 || 5, // Will use processSensorData default (35)
-                    O3: processed.rawData?.mq131Ozone || 0,
+                    PM10: processed.rawData?.pm1_0_ppm || 0,
+                    PM25: processed.rawData?.pm2_5_ppm || 0,
+                    PM10: processed.rawData?.pm10_ppm || 0,
+                    O3: processed.rawData?.ozone_ppm || 0,
+                    CO: processed.rawData?.co_ppm || 0
                 },
-                temperature: processed.temperature || null,
-                humidity: processed.humidity || null,
+                temperature: processed.temp_celsius || null,
+                humidity: processed.humidity_percent || null,
+                gps: processed.gps || { latitude: gps_lat, longitude: gps_lng },
+                buzzer: processed.buzzer_o || false
             };
-            console.log("UPdate sent to UI:", update);
-            await OBSData.create(processed); // Save to database
+
+            // Broadcast to clients
             broadcast({
                 success: true,
                 message: 'Real-time update',
-                data: update,
+                data: update
             });
+            console.log('[WEBSOCKET] Broadcasted AQI:', update.aqi);
+
+            // Save to database
+            await OBSData.create(processed);
+            console.log('[DATABASE] Saved AQI:', processed.AQI);
         } catch (err) {
-            console.error('Realtime data processing error:', err);
+            console.error('[WEBSOCKET] Data processing error:', err.message);
             broadcast({
                 success: false,
                 message: 'Error processing data',
-                timestamp: new Date().toISOString(),
+                timestamp: new Date().toISOString()
             });
         }
     });
 
     wss.on('close', () => {
         activeConnections.clear();
-        console.log('WebSocket server closed');
+        console.log('[WEBSOCKET] Server closed');
     });
 };
