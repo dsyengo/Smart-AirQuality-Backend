@@ -38,10 +38,10 @@ export const initRealtimeDataStream = (server) => {
                         O3: processed.rawData?.ozone_ppm || 0,
                         CO: processed.rawData?.co_ppm || 0
                     },
-                    temperature: processed.temperature || null,
-                    humidity: processed.humidity || null,
-                    gps: processed.gps || { latitude: 0, longitude: 0 },
-                    buzzer: processed.buzzer || false
+                    temperature: processed.temp_celsius || null,
+                    humidity: processed.humidity_percent || null,
+                    gps: processed.gps || { latitude: gps_lat, longitude: gps_lng },
+                    buzzer: processed.buzzer_o || false
                 };
             } else {
                 const latestDBData = await OBSData.findOne().sort({ timestamp: -1 }).limit(1);
