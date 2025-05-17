@@ -34,7 +34,7 @@ export const initRealtimeDataStream = (server) => {
                 try {
                     const processed = processSensorData(latestRawData[0]);
                     formattedData = {
-                        timestamp: processed.timestamp.toISOString(),
+                        timestamp: processed.timestamp,
                         aqi: processed.AQI || 0,
                         pollutants: {
                             PM1_0: processed.rawData?.pm1_0_ppm || 0,
@@ -61,7 +61,7 @@ export const initRealtimeDataStream = (server) => {
                     try {
                         const processed = processSensorData(latestDBData.toObject());
                         formattedData = {
-                            timestamp: processed.timestamp.toISOString(),
+                            timestamp: processed.timestamp,
                             aqi: processed.AQI || 0,
                             pollutants: {
                                 PM1_0: processed.rawData?.pm1_0_ppm || 0,
@@ -130,7 +130,7 @@ export const initRealtimeDataStream = (server) => {
                 buzzer: processed.buzzer_o || false
             };
 
-            
+
 
             // Broadcast first
             broadcast({
