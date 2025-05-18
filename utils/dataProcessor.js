@@ -3,7 +3,13 @@ import { calculateAQI } from './aqiCalculator.js';
 
 export const processSensorData = (sensorData) => {
     const rawData = Array.isArray(sensorData) ? sensorData[0] : sensorData;
-    
+    console.log('[PROCESSOR] Raw data:', rawData);
+
+    if (!rawData) {
+        console.error('[PROCESSOR] No raw data available');
+        return null;
+    }
+
 
     const aqiParams = {
         pm1: rawData?.pm1_0_ppm || 0,
@@ -23,7 +29,8 @@ export const processSensorData = (sensorData) => {
     } catch {
         timestamp = new Date().toISOString();
     }
-
+    console.log("TEmp", rawData?.temp_celsius);
+    console.log("Humidity", rawData?.humidity_percent);
     return {
         rawData,
         AQI: AQILevel,

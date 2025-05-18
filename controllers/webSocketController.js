@@ -48,7 +48,7 @@ export const initRealtimeDataStream = (server) => {
                         gps: processed.gps || { latitude: processed.rawData?.gps_lat || 0, longitude: processed.rawData?.gps_lng || 0 },
                         buzzer: processed.buzzer_o || false
                     };
-                    console.log('[WEBSOCKET] Real-time data processed:', formattedData);
+
                 } catch (processError) {
                     console.error('[WEBSOCKET] Error processing real-time data:', processError.message);
                 }
@@ -124,13 +124,13 @@ export const initRealtimeDataStream = (server) => {
                     O3: processed.rawData?.ozone_ppm || 0,
                     CO: processed.rawData?.co_ppm || 0
                 },
-                temperature: processed.temperature || null,
-                humidity: processed.humidity || null,
+                temperature: processed.temperature || 0,
+                humidity: processed.humidity || 0,
                 gps: processed.gps || { latitude: processed.rawData?.gps_lat || 0, longitude: processed.rawData?.gps_lng || 0 },
                 buzzer: processed.buzzer_o || false
             };
 
-
+            console.log('[WEBSOCKET] New data received:', processed);
 
             // Broadcast first
             broadcast({
